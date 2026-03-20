@@ -1,34 +1,28 @@
 'use server'
 
-import { readFile, writeFile, mkdir, unlink } from 'fs/promises'
-import { existsSync } from 'fs'
-import path from 'path'
+import { supabase } from '@/lib/supabase'
 import { revalidatePath } from 'next/cache'
 
-const DATA_FILE = path.join(process.cwd(), 'data', 'product-images.json')
-const PUBLIC_DIR = path.join(process.cwd(), 'public', 'product-images')
-
-async function readImageData(): Promise<Record<string, string[]>> {
-  try {
-    const content = await readFile(DATA_FILE, 'utf-8')
-    return JSON.parse(content)
-  } catch {
-    return {}
-  }
-}
-
-async function writeImageData(data: Record<string, string[]>) {
-  await mkdir(path.dirname(DATA_FILE), { recursive: true })
-  await writeFile(DATA_FILE, JSON.stringify(data, null, 2))
-}
-
 export async function getProductImages(productId: string): Promise<string[]> {
-  const data = await readImageData()
-  return data[productId] || []
+  const { data } = await supabase
+    .from('product_images')
+    .select('url')
+    .eq('product_id', productId)
+    .order('position')
+  return data?.map((r) => r.url) ?? []
 }
 
 export async function getAllProductImages(): Promise<Record<string, string[]>> {
-  return readImageData()
+  const { data } = await supabase
+    .from('product_images')
+    .select('product_id, url')
+    .order('position')
+  const result: Record<string, string[]> = {}
+  for (const row of data ?? []) {
+    if (!result[row.product_id]) result[row.product_id] = []
+    result[row.product_id].push(row.url)
+  }
+  return result
 }
 
 export async function uploadProductImage(
@@ -37,31 +31,39 @@ export async function uploadProductImage(
   try {
     const file = formData.get('image') as File
     const productId = formData.get('productId') as string
-
     if (!file || !productId) return { success: false, error: '파일 또는 상품 ID가 없습니다.' }
 
-    const bytes = await file.arrayBuffer()
-    const buffer = Buffer.from(bytes)
-
-    const dir = path.join(PUBLIC_DIR, productId)
-    await mkdir(dir, { recursive: true })
-
-    const ext = file.name.split('.').pop() || 'jpg'
+    const ext = file.name.split('.').pop() ?? 'jpg'
     const filename = `${Date.now()}.${ext}`
-    const filepath = path.join(dir, filename)
-    await writeFile(filepath, buffer)
+    const storagePath = `${productId}/${filename}`
 
-    const webPath = `/product-images/${productId}/${filename}`
+    const { error: uploadError } = await supabase.storage
+      .from('product-images')
+      .upload(storagePath, file, { contentType: file.type })
+    if (uploadError) throw uploadError
 
-    const data = await readImageData()
-    if (!data[productId]) data[productId] = []
-    data[productId].push(webPath)
-    await writeImageData(data)
+    const { data: { publicUrl } } = supabase.storage
+      .from('product-images')
+      .getPublicUrl(storagePath)
+
+    const { data: existing } = await supabase
+      .from('product_images')
+      .select('position')
+      .eq('product_id', productId)
+      .order('position', { ascending: false })
+      .limit(1)
+
+    const position = existing && existing.length > 0 ? existing[0].position + 1 : 0
+
+    const { error: dbError } = await supabase
+      .from('product_images')
+      .insert({ product_id: productId, url: publicUrl, position })
+    if (dbError) throw dbError
 
     revalidatePath(`/product/${productId}`)
     revalidatePath(`/admin/products/${productId}`)
 
-    return { success: true, path: webPath }
+    return { success: true, path: publicUrl }
   } catch (e) {
     return { success: false, error: String(e) }
   }
@@ -72,22 +74,22 @@ export async function deleteProductImage(
   imagePath: string
 ): Promise<{ success: boolean }> {
   try {
-    const data = await readImageData()
-    if (data[productId]) {
-      data[productId] = data[productId].filter((p) => p !== imagePath)
-      await writeImageData(data)
-    }
+    await supabase
+      .from('product_images')
+      .delete()
+      .eq('product_id', productId)
+      .eq('url', imagePath)
 
-    // product-images 폴더의 파일만 삭제 (product-details는 수동 관리)
-    if (imagePath.startsWith('/product-images/')) {
-      const filename = path.basename(imagePath)
-      const filepath = path.join(PUBLIC_DIR, productId, filename)
-      if (existsSync(filepath)) await unlink(filepath)
+    if (imagePath.includes('supabase.co')) {
+      const url = new URL(imagePath)
+      const parts = url.pathname.split('/product-images/')
+      if (parts.length > 1) {
+        await supabase.storage.from('product-images').remove([parts[1]])
+      }
     }
 
     revalidatePath(`/product/${productId}`)
     revalidatePath(`/admin/products/${productId}`)
-
     return { success: true }
   } catch {
     return { success: false }

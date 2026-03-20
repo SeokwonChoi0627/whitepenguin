@@ -1,27 +1,17 @@
 'use server'
 
-import { readFile, writeFile, mkdir } from 'fs/promises'
-import path from 'path'
+import { supabase } from '@/lib/supabase'
 import { revalidatePath } from 'next/cache'
 
-const DATA_FILE = path.join(process.cwd(), 'data', 'product-thumbnails.json')
-const PUBLIC_DIR = path.join(process.cwd(), 'public', 'product-thumbnails-custom')
-
-async function readData(): Promise<Record<string, string>> {
-  try {
-    return JSON.parse(await readFile(DATA_FILE, 'utf-8'))
-  } catch {
-    return {}
-  }
-}
-
-async function writeData(data: Record<string, string>) {
-  await mkdir(path.dirname(DATA_FILE), { recursive: true })
-  await writeFile(DATA_FILE, JSON.stringify(data, null, 2))
-}
-
 export async function getProductThumbnails(): Promise<Record<string, string>> {
-  return readData()
+  const { data } = await supabase
+    .from('product_thumbnails')
+    .select('product_id, url')
+  const result: Record<string, string> = {}
+  for (const row of data ?? []) {
+    result[row.product_id] = row.url
+  }
+  return result
 }
 
 export async function uploadProductThumbnail(
@@ -32,19 +22,23 @@ export async function uploadProductThumbnail(
     const productId = formData.get('productId') as string
     if (!file || !productId) return { success: false, error: '파일 또는 상품 ID가 없습니다.' }
 
-    const bytes = await file.arrayBuffer()
-    const dir = path.join(PUBLIC_DIR, productId)
-    await mkdir(dir, { recursive: true })
-
     const ext = file.name.split('.').pop() ?? 'jpg'
     const filename = `${Date.now()}.${ext}`
-    await writeFile(path.join(dir, filename), Buffer.from(bytes))
+    const storagePath = `${productId}/${filename}`
 
-    const webPath = `/product-thumbnails-custom/${productId}/${filename}`
+    const { error: uploadError } = await supabase.storage
+      .from('product-thumbnails-custom')
+      .upload(storagePath, file, { contentType: file.type })
+    if (uploadError) throw uploadError
 
-    const data = await readData()
-    data[productId] = webPath
-    await writeData(data)
+    const { data: { publicUrl } } = supabase.storage
+      .from('product-thumbnails-custom')
+      .getPublicUrl(storagePath)
+
+    const { error: dbError } = await supabase
+      .from('product_thumbnails')
+      .upsert({ product_id: productId, url: publicUrl })
+    if (dbError) throw dbError
 
     revalidatePath(`/product/${productId}`)
     revalidatePath('/products')
@@ -52,7 +46,7 @@ export async function uploadProductThumbnail(
     revalidatePath(`/admin/products/${productId}`)
     revalidatePath('/admin')
 
-    return { success: true, path: webPath }
+    return { success: true, path: publicUrl }
   } catch (e) {
     return { success: false, error: String(e) }
   }
