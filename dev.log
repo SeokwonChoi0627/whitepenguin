@@ -1,0 +1,582 @@
+Microsoft Windows [Version 10.0.26100.8037]
+(c) Microsoft Corporation. All rights reserved.
+
+C:\A ○ Compiling / ...
+ ✓ Compiled / in 8s (531 modules)
+ GET / 200 in 8600ms
+ ✓ Compiled in 897ms (265 modules)
+ GET / 200 in 95ms
+ ○ Compiling /products ...
+ ✓ Compiled /products in 540ms (537 modules)
+ ✓ Compiled /auth in 220ms (539 modules)
+ ✓ Compiled /community in 299ms (546 modules)
+ ✓ Compiled /_not-found in 431ms (549 modules)
+ GET /community/1 404 in 106ms
+ GET /community 200 in 105ms
+ ✓ Compiled /quote in 370ms (567 modules)
+ ✓ Compiled in 646ms (578 modules)
+ GET /products 200 in 337ms
+ GET /products 200 in 147ms
+ ✓ Compiled /community/write in 406ms (574 modules)
+ ✓ Compiled in 539ms (286 modules)
+ ✓ Compiled in 628ms (579 modules)
+ ✓ Compiled in 795ms (579 modules)
+ ✓ Compiled in 402ms (579 modules)
+ ✓ Compiled in 460ms (579 modules)
+ ✓ Compiled in 195ms (286 modules)
+ ✓ Compiled in 1158ms (579 modules)
+ ✓ Compiled in 414ms (579 modules)
+ ○ Compiling / ...
+ ✓ Compiled / in 787ms (588 modules)
+ GET / 200 in 174ms
+ ✓ Compiled in 809ms (578 modules)
+ GET / 200 in 287ms
+ GET / 200 in 191ms
+ ✓ Compiled /products in 228ms (302 modules)
+ ✓ Compiled in 494ms (586 modules)
+ ✓ Compiled in 205ms (572 modules)
+ ✓ Compiled in 280ms (572 modules)
+ ✓ Compiled in 203ms (286 modules)
+ ⨯ SyntaxError: Unexpected end of JSON input
+    at JSON.parse (<anonymous>)
+    at loadManifest (C:\whitepenguin\node_modules\next\dist\server\load-manifest.js:35:27)
+    at DevServer.getNextFontManifest (C:\whitepenguin\node_modules\next\dist\server\next-server.js:745:47)
+    at DevServer.findPageComponents (C:\whitepenguin\node_modules\next\dist\server\dev\next-dev-server.js:571:43)
+    at async DevServer.renderPageComponent (C:\whitepenguin\node_modules\next\dist\server\base-server.js:1917:24)
+    at async DevServer.renderToResponseImpl (C:\whitepenguin\node_modules\next\dist\server\base-server.js:1969:32)
+    at async DevServer.pipeImpl (C:\whitepenguin\node_modules\next\dist\server\base-server.js:920:25)
+    at async NextNodeServer.handleCatchallRenderRequest (C:\whitepenguin\node_modules\next\dist\server\next-server.js:272:17)
+    at async DevServer.handleRequestImpl (C:\whitepenguin\node_modules\next\dist\server\base-server.js:816:17)
+    at async C:\whitepenguin\node_modules\next\dist\server\dev\next-dev-server.js:339:20
+    at async Span.traceAsyncFn (C:\whitepenguin\node_modules\next\dist\trace\trace.js:154:20)
+    at async DevServer.handleRequest (C:\whitepenguin\node_modules\next\dist\server\dev\next-dev-server.js:336:24)
+    at async invokeRender (C:\whitepenguin\node_modules\next\dist\server\lib\router-server.js:174:21)
+    at async handleRequest (C:\whitepenguin\node_modules\next\dist\server\lib\router-server.js:353:24)
+    at async requestHandlerImpl (C:\whitepenguin\node_modules\next\dist\server\lib\router-server.js:377:13)
+    at async Server.requestListener (C:\whitepenguin\node_modules\next\dist\server\lib\start-server.js:141:13) {
+  page: '/products'
+}
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 1657ms (796 modules)
+ GET /products?category=baking-mold 200 in 170ms
+ ✓ Compiled in 829ms (796 modules)
+ ✓ Compiled in 668ms (810 modules)
+ ⨯ ./components/ProductCard.tsx
+Error: 
+  [31mx[0m Unexpected token `div`. Expected jsx identifier
+    ,-[[36;1;4mC:\whitepenguin\components\ProductCard.tsx[0m:11:1]
+ [2m11[0m | 
+ [2m12[0m | export default function ProductCard({ product, onAddToQuote }: Props) {
+ [2m13[0m |   return (
+ [2m14[0m |     <div className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 group">
+    : [31;1m     ^^^[0m
+ [2m15[0m |       <Link href={`/product/${product.id}`} className="block">
+ [2m16[0m |       {/* 이미지 영역 */}
+ [2m17[0m |       <div
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/ProductCard.tsx
+./app/products/page.tsx
+ GET /products?category=baking-mold 500 in 65ms
+ ✓ Compiled in 449ms (810 modules)
+ ✓ Compiled in 614ms (808 modules)
+ ✓ Compiled /product/[id] in 408ms (812 modules)
+ ⨯ Error: Cannot find module './vendor-chunks/next.js'
+Require stack:
+- C:\whitepenguin\.next\server\webpack-runtime.js
+- C:\whitepenguin\.next\server\app\product\[id]\page.js
+- C:\whitepenguin\node_modules\next\dist\server\require.js
+- C:\whitepenguin\node_modules\next\dist\server\load-components.js
+- C:\whitepenguin\node_modules\next\dist\build\utils.js
+- C:\whitepenguin\node_modules\next\dist\server\dev\static-paths-worker.js
+- C:\whitepenguin\node_modules\next\dist\compiled\jest-worker\processChild.js
+    at Function.<anonymous> (node:internal/modules/cjs/loader:1383:15)
+    at C:\whitepenguin\node_modules\next\dist\server\require-hook.js:55:36
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1025:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1030:22)
+    at Function._load (node:internal/modules/cjs/loader:1192:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1463:12)
+    at mod.require (C:\whitepenguin\node_modules\next\dist\server\require-hook.js:65:28)
+    at require (node:internal/modules/helpers:147:16) {
+  type: 'Error',
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    'C:\\whitepenguin\\.next\\server\\webpack-runtime.js',
+    'C:\\whitepenguin\\.next\\server\\app\\product\\[id]\\page.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\server\\require.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\server\\load-components.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\build\\utils.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\server\\dev\\static-paths-worker.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\compiled\\jest-worker\\processChild.js'
+  ],
+  page: '/product/WP48412'
+}
+ ✓ Compiled /_error in 173ms (814 modules)
+ ⨯ Error: Cannot find module './682.js'
+Require stack:
+- C:\whitepenguin\.next\server\webpack-runtime.js
+- C:\whitepenguin\.next\server\pages\_document.js
+- C:\whitepenguin\node_modules\next\dist\server\require.js
+- C:\whitepenguin\node_modules\next\dist\server\load-components.js
+- C:\whitepenguin\node_modules\next\dist\build\utils.js
+- C:\whitepenguin\node_modules\next\dist\server\dev\hot-middleware.js
+- C:\whitepenguin\node_modules\next\dist\server\dev\hot-reloader-webpack.js
+- C:\whitepenguin\node_modules\next\dist\server\lib\router-utils\setup-dev-bundler.js
+- C:\whitepenguin\node_modules\next\dist\server\lib\router-server.js
+- C:\whitepenguin\node_modules\next\dist\server\lib\start-server.js
+    at Function.<anonymous> (node:internal/modules/cjs/loader:1383:15)
+    at C:\whitepenguin\node_modules\next\dist\server\require-hook.js:55:36
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1025:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1030:22)
+    at Function._load (node:internal/modules/cjs/loader:1192:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1463:12)
+    at mod.require (C:\whitepenguin\node_modules\next\dist\server\require-hook.js:65:28)
+    at require (node:internal/modules/helpers:147:16)
+    at __webpack_require__.f.require (C:\whitepenguin\.next\server\webpack-runtime.js:198:28)
+    at C:\whitepenguin\.next\server\webpack-runtime.js:111:40
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\whitepenguin\.next\server\webpack-runtime.js:110:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\whitepenguin\.next\server\webpack-runtime.js:162:22)
+    at C:\whitepenguin\.next\server\pages\_document.js:1:335
+    at Object.<anonymous> (C:\whitepenguin\.next\server\pages\_document.js:1:376)
+    at Module._compile (node:internal/modules/cjs/loader:1706:14)
+    at Object..js (node:internal/modules/cjs/loader:1839:10)
+    at Module.load (node:internal/modules/cjs/loader:1441:32)
+    at Function._load (node:internal/modules/cjs/loader:1263:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1463:12)
+    at mod.require (C:\whitepenguin\node_modules\next\dist\server\require-hook.js:65:28)
+    at require (node:internal/modules/helpers:147:16)
+    at requirePage (C:\whitepenguin\node_modules\next\dist\server\require.js:109:84)
+    at C:\whitepenguin\node_modules\next\dist\server\load-components.js:72:65
+    at async Promise.all (index 0)
+    at async loadComponentsImpl (C:\whitepenguin\node_modules\next\dist\server\load-components.js:71:33)
+    at async DevServer.findPageComponentsImpl (C:\whitepenguin\node_modules\next\dist\server\next-server.js:710:36) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    'C:\\whitepenguin\\.next\\server\\webpack-runtime.js',
+    'C:\\whitepenguin\\.next\\server\\pages\\_document.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\server\\require.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\server\\load-components.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\build\\utils.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\server\\dev\\hot-middleware.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\server\\dev\\hot-reloader-webpack.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\server\\lib\\router-utils\\setup-dev-bundler.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\server\\lib\\router-server.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\server\\lib\\start-server.js'
+  ]
+}
+ GET /product/WP48412 500 in 1065ms
+ ⨯ Error: Cannot find module './vendor-chunks/next.js'
+Require stack:
+- C:\whitepenguin\.next\server\webpack-runtime.js
+- C:\whitepenguin\.next\server\app\product\[id]\page.js
+- C:\whitepenguin\node_modules\next\dist\server\require.js
+- C:\whitepenguin\node_modules\next\dist\server\load-components.js
+- C:\whitepenguin\node_modules\next\dist\build\utils.js
+- C:\whitepenguin\node_modules\next\dist\server\dev\static-paths-worker.js
+- C:\whitepenguin\node_modules\next\dist\compiled\jest-worker\processChild.js
+    at Function.<anonymous> (node:internal/modules/cjs/loader:1383:15)
+    at C:\whitepenguin\node_modules\next\dist\server\require-hook.js:55:36
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1025:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1030:22)
+    at Function._load (node:internal/modules/cjs/loader:1192:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1463:12)
+    at mod.require (C:\whitepenguin\node_modules\next\dist\server\require-hook.js:65:28)
+    at require (node:internal/modules/helpers:147:16) {
+  type: 'Error',
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    'C:\\whitepenguin\\.next\\server\\webpack-runtime.js',
+    'C:\\whitepenguin\\.next\\server\\app\\product\\[id]\\page.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\server\\require.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\server\\load-components.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\build\\utils.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\server\\dev\\static-paths-worker.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\compiled\\jest-worker\\processChild.js'
+  ],
+  page: '/product/WP48412'
+}
+ ⨯ Error: Cannot find module './682.js'
+Require stack:
+- C:\whitepenguin\.next\server\webpack-runtime.js
+- C:\whitepenguin\.next\server\pages\_document.js
+- C:\whitepenguin\node_modules\next\dist\server\require.js
+- C:\whitepenguin\node_modules\next\dist\server\load-components.js
+- C:\whitepenguin\node_modules\next\dist\build\utils.js
+- C:\whitepenguin\node_modules\next\dist\server\dev\hot-middleware.js
+- C:\whitepenguin\node_modules\next\dist\server\dev\hot-reloader-webpack.js
+- C:\whitepenguin\node_modules\next\dist\server\lib\router-utils\setup-dev-bundler.js
+- C:\whitepenguin\node_modules\next\dist\server\lib\router-server.js
+- C:\whitepenguin\node_modules\next\dist\server\lib\start-server.js
+    at Function.<anonymous> (node:internal/modules/cjs/loader:1383:15)
+    at C:\whitepenguin\node_modules\next\dist\server\require-hook.js:55:36
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1025:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1030:22)
+    at Function._load (node:internal/modules/cjs/loader:1192:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1463:12)
+    at mod.require (C:\whitepenguin\node_modules\next\dist\server\require-hook.js:65:28)
+    at require (node:internal/modules/helpers:147:16)
+    at __webpack_require__.f.require (C:\whitepenguin\.next\server\webpack-runtime.js:198:28)
+    at C:\whitepenguin\.next\server\webpack-runtime.js:111:40
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\whitepenguin\.next\server\webpack-runtime.js:110:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\whitepenguin\.next\server\webpack-runtime.js:162:22)
+    at C:\whitepenguin\.next\server\pages\_document.js:1:335
+    at Object.<anonymous> (C:\whitepenguin\.next\server\pages\_document.js:1:376)
+    at Module._compile (node:internal/modules/cjs/loader:1706:14)
+    at Object..js (node:internal/modules/cjs/loader:1839:10)
+    at Module.load (node:internal/modules/cjs/loader:1441:32)
+    at Function._load (node:internal/modules/cjs/loader:1263:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1463:12)
+    at mod.require (C:\whitepenguin\node_modules\next\dist\server\require-hook.js:65:28)
+    at require (node:internal/modules/helpers:147:16)
+    at requirePage (C:\whitepenguin\node_modules\next\dist\server\require.js:109:84)
+    at C:\whitepenguin\node_modules\next\dist\server\load-components.js:72:65
+    at async Promise.all (index 0)
+    at async loadComponentsImpl (C:\whitepenguin\node_modules\next\dist\server\load-components.js:71:33)
+    at async DevServer.findPageComponentsImpl (C:\whitepenguin\node_modules\next\dist\server\next-server.js:710:36) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    'C:\\whitepenguin\\.next\\server\\webpack-runtime.js',
+    'C:\\whitepenguin\\.next\\server\\pages\\_document.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\server\\require.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\server\\load-components.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\build\\utils.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\server\\dev\\hot-middleware.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\server\\dev\\hot-reloader-webpack.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\server\\lib\\router-utils\\setup-dev-bundler.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\server\\lib\\router-server.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\server\\lib\\start-server.js'
+  ]
+}
+ GET /product/WP48412 500 in 315ms
+ ⨯ Error: Cannot find module './vendor-chunks/next.js'
+Require stack:
+- C:\whitepenguin\.next\server\webpack-runtime.js
+- C:\whitepenguin\.next\server\app\product\[id]\page.js
+- C:\whitepenguin\node_modules\next\dist\server\require.js
+- C:\whitepenguin\node_modules\next\dist\server\load-components.js
+- C:\whitepenguin\node_modules\next\dist\build\utils.js
+- C:\whitepenguin\node_modules\next\dist\server\dev\static-paths-worker.js
+- C:\whitepenguin\node_modules\next\dist\compiled\jest-worker\processChild.js
+    at Function.<anonymous> (node:internal/modules/cjs/loader:1383:15)
+    at C:\whitepenguin\node_modules\next\dist\server\require-hook.js:55:36
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1025:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1030:22)
+    at Function._load (node:internal/modules/cjs/loader:1192:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1463:12)
+    at mod.require (C:\whitepenguin\node_modules\next\dist\server\require-hook.js:65:28)
+    at require (node:internal/modules/helpers:147:16) {
+  type: 'Error',
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    'C:\\whitepenguin\\.next\\server\\webpack-runtime.js',
+    'C:\\whitepenguin\\.next\\server\\app\\product\\[id]\\page.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\server\\require.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\server\\load-components.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\build\\utils.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\server\\dev\\static-paths-worker.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\compiled\\jest-worker\\processChild.js'
+  ],
+  page: '/product/WP48414'
+}
+ ⨯ Error: Cannot find module './682.js'
+Require stack:
+- C:\whitepenguin\.next\server\webpack-runtime.js
+- C:\whitepenguin\.next\server\pages\_document.js
+- C:\whitepenguin\node_modules\next\dist\server\require.js
+- C:\whitepenguin\node_modules\next\dist\server\load-components.js
+- C:\whitepenguin\node_modules\next\dist\build\utils.js
+- C:\whitepenguin\node_modules\next\dist\server\dev\hot-middleware.js
+- C:\whitepenguin\node_modules\next\dist\server\dev\hot-reloader-webpack.js
+- C:\whitepenguin\node_modules\next\dist\server\lib\router-utils\setup-dev-bundler.js
+- C:\whitepenguin\node_modules\next\dist\server\lib\router-server.js
+- C:\whitepenguin\node_modules\next\dist\server\lib\start-server.js
+    at Function.<anonymous> (node:internal/modules/cjs/loader:1383:15)
+    at C:\whitepenguin\node_modules\next\dist\server\require-hook.js:55:36
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1025:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1030:22)
+    at Function._load (node:internal/modules/cjs/loader:1192:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1463:12)
+    at mod.require (C:\whitepenguin\node_modules\next\dist\server\require-hook.js:65:28)
+    at require (node:internal/modules/helpers:147:16)
+    at __webpack_require__.f.require (C:\whitepenguin\.next\server\webpack-runtime.js:198:28)
+    at C:\whitepenguin\.next\server\webpack-runtime.js:111:40
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\whitepenguin\.next\server\webpack-runtime.js:110:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\whitepenguin\.next\server\webpack-runtime.js:162:22)
+    at C:\whitepenguin\.next\server\pages\_document.js:1:335
+    at Object.<anonymous> (C:\whitepenguin\.next\server\pages\_document.js:1:376)
+    at Module._compile (node:internal/modules/cjs/loader:1706:14)
+    at Object..js (node:internal/modules/cjs/loader:1839:10)
+    at Module.load (node:internal/modules/cjs/loader:1441:32)
+    at Function._load (node:internal/modules/cjs/loader:1263:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1463:12)
+    at mod.require (C:\whitepenguin\node_modules\next\dist\server\require-hook.js:65:28)
+    at require (node:internal/modules/helpers:147:16)
+    at requirePage (C:\whitepenguin\node_modules\next\dist\server\require.js:109:84)
+    at C:\whitepenguin\node_modules\next\dist\server\load-components.js:72:65
+    at async Promise.all (index 0)
+    at async loadComponentsImpl (C:\whitepenguin\node_modules\next\dist\server\load-components.js:71:33)
+    at async DevServer.findPageComponentsImpl (C:\whitepenguin\node_modules\next\dist\server\next-server.js:710:36) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    'C:\\whitepenguin\\.next\\server\\webpack-runtime.js',
+    'C:\\whitepenguin\\.next\\server\\pages\\_document.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\server\\require.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\server\\load-components.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\build\\utils.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\server\\dev\\hot-middleware.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\server\\dev\\hot-reloader-webpack.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\server\\lib\\router-utils\\setup-dev-bundler.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\server\\lib\\router-server.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\server\\lib\\start-server.js'
+  ]
+}
+ GET /product/WP48414 500 in 343ms
+ ⨯ Error: Cannot find module './164.js'
+Require stack:
+- C:\whitepenguin\.next\server\webpack-runtime.js
+- C:\whitepenguin\.next\server\pages\_document.js
+- C:\whitepenguin\node_modules\next\dist\server\require.js
+- C:\whitepenguin\node_modules\next\dist\server\load-components.js
+- C:\whitepenguin\node_modules\next\dist\build\utils.js
+- C:\whitepenguin\node_modules\next\dist\server\dev\hot-middleware.js
+- C:\whitepenguin\node_modules\next\dist\server\dev\hot-reloader-webpack.js
+- C:\whitepenguin\node_modules\next\dist\server\lib\router-utils\setup-dev-bundler.js
+- C:\whitepenguin\node_modules\next\dist\server\lib\router-server.js
+- C:\whitepenguin\node_modules\next\dist\server\lib\start-server.js
+    at Function.<anonymous> (node:internal/modules/cjs/loader:1383:15)
+    at C:\whitepenguin\node_modules\next\dist\server\require-hook.js:55:36
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1025:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1030:22)
+    at Function._load (node:internal/modules/cjs/loader:1192:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1463:12)
+    at mod.require (C:\whitepenguin\node_modules\next\dist\server\require-hook.js:65:28)
+    at require (node:internal/modules/helpers:147:16)
+    at __webpack_require__.f.require (C:\whitepenguin\.next\server\webpack-runtime.js:198:28)
+    at C:\whitepenguin\.next\server\webpack-runtime.js:111:40
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\whitepenguin\.next\server\webpack-runtime.js:110:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\whitepenguin\.next\server\webpack-runtime.js:162:22)
+    at C:\whitepenguin\.next\server\app\page.js:6:7906
+    at Object.<anonymous> (C:\whitepenguin\.next\server\app\page.js:6:7951)
+    at Module._compile (node:internal/modules/cjs/loader:1706:14)
+    at Object..js (node:internal/modules/cjs/loader:1839:10)
+    at Module.load (node:internal/modules/cjs/loader:1441:32)
+    at Function._load (node:internal/modules/cjs/loader:1263:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1463:12)
+    at mod.require (C:\whitepenguin\node_modules\next\dist\server\require-hook.js:65:28)
+    at require (node:internal/modules/helpers:147:16)
+    at requirePage (C:\whitepenguin\node_modules\next\dist\server\require.js:109:84)
+    at C:\whitepenguin\node_modules\next\dist\server\load-components.js:98:84
+    at async loadComponentsImpl (C:\whitepenguin\node_modules\next\dist\server\load-components.js:98:26)
+    at async DevServer.findPageComponentsImpl (C:\whitepenguin\node_modules\next\dist\server\next-server.js:710:36)
+    at async DevServer.findPageComponents (C:\whitepenguin\node_modules\next\dist\server\dev\next-dev-server.js:577:20)
+    at async DevServer.renderPageComponent (C:\whitepenguin\node_modules\next\dist\server\base-server.js:1917:24)
+    at async DevServer.renderToResponseImpl (C:\whitepenguin\node_modules\next\dist\server\base-server.js:1969:32)
+    at async DevServer.pipeImpl (C:\whitepenguin\node_modules\next\dist\server\base-server.js:920:25)
+    at async NextNodeServer.handleCatchallRenderRequest (C:\whitepenguin\node_modules\next\dist\server\next-server.js:272:17)
+    at async DevServer.handleRequestImpl (C:\whitepenguin\node_modules\next\dist\server\base-server.js:816:17)
+    at async C:\whitepenguin\node_modules\next\dist\server\dev\next-dev-server.js:339:20
+    at async Span.traceAsyncFn (C:\whitepenguin\node_modules\next\dist\trace\trace.js:154:20)
+    at async DevServer.handleRequest (C:\whitepenguin\node_modules\next\dist\server\dev\next-dev-server.js:336:24)
+    at async invokeRender (C:\whitepenguin\node_modules\next\dist\server\lib\router-server.js:174:21)
+    at async handleRequest (C:\whitepenguin\node_modules\next\dist\server\lib\router-server.js:353:24)
+    at async requestHandlerImpl (C:\whitepenguin\node_modules\next\dist\server\lib\router-server.js:377:13)
+    at async Server.requestListener (C:\whitepenguin\node_modules\next\dist\server\lib\start-server.js:141:13) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    'C:\\whitepenguin\\.next\\server\\webpack-runtime.js',
+    'C:\\whitepenguin\\.next\\server\\pages\\_document.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\server\\require.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\server\\load-components.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\build\\utils.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\server\\dev\\hot-middleware.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\server\\dev\\hot-reloader-webpack.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\server\\lib\\router-utils\\setup-dev-bundler.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\server\\lib\\router-server.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\server\\lib\\start-server.js'
+  ],
+  page: '/'
+}
+ ⨯ Error: Cannot find module './682.js'
+Require stack:
+- C:\whitepenguin\.next\server\webpack-runtime.js
+- C:\whitepenguin\.next\server\pages\_document.js
+- C:\whitepenguin\node_modules\next\dist\server\require.js
+- C:\whitepenguin\node_modules\next\dist\server\load-components.js
+- C:\whitepenguin\node_modules\next\dist\build\utils.js
+- C:\whitepenguin\node_modules\next\dist\server\dev\hot-middleware.js
+- C:\whitepenguin\node_modules\next\dist\server\dev\hot-reloader-webpack.js
+- C:\whitepenguin\node_modules\next\dist\server\lib\router-utils\setup-dev-bundler.js
+- C:\whitepenguin\node_modules\next\dist\server\lib\router-server.js
+- C:\whitepenguin\node_modules\next\dist\server\lib\start-server.js
+    at Function.<anonymous> (node:internal/modules/cjs/loader:1383:15)
+    at C:\whitepenguin\node_modules\next\dist\server\require-hook.js:55:36
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1025:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1030:22)
+    at Function._load (node:internal/modules/cjs/loader:1192:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1463:12)
+    at mod.require (C:\whitepenguin\node_modules\next\dist\server\require-hook.js:65:28)
+    at require (node:internal/modules/helpers:147:16)
+    at __webpack_require__.f.require (C:\whitepenguin\.next\server\webpack-runtime.js:198:28)
+    at C:\whitepenguin\.next\server\webpack-runtime.js:111:40
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\whitepenguin\.next\server\webpack-runtime.js:110:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\whitepenguin\.next\server\webpack-runtime.js:162:22)
+    at C:\whitepenguin\.next\server\pages\_document.js:1:335
+    at Object.<anonymous> (C:\whitepenguin\.next\server\pages\_document.js:1:376)
+    at Module._compile (node:internal/modules/cjs/loader:1706:14)
+    at Object..js (node:internal/modules/cjs/loader:1839:10)
+    at Module.load (node:internal/modules/cjs/loader:1441:32)
+    at Function._load (node:internal/modules/cjs/loader:1263:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1463:12)
+    at mod.require (C:\whitepenguin\node_modules\next\dist\server\require-hook.js:65:28)
+    at require (node:internal/modules/helpers:147:16)
+    at requirePage (C:\whitepenguin\node_modules\next\dist\server\require.js:109:84)
+    at C:\whitepenguin\node_modules\next\dist\server\load-components.js:72:65
+    at async Promise.all (index 0)
+    at async loadComponentsImpl (C:\whitepenguin\node_modules\next\dist\server\load-components.js:71:33)
+    at async DevServer.findPageComponentsImpl (C:\whitepenguin\node_modules\next\dist\server\next-server.js:710:36) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    'C:\\whitepenguin\\.next\\server\\webpack-runtime.js',
+    'C:\\whitepenguin\\.next\\server\\pages\\_document.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\server\\require.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\server\\load-components.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\build\\utils.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\server\\dev\\hot-middleware.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\server\\dev\\hot-reloader-webpack.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\server\\lib\\router-utils\\setup-dev-bundler.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\server\\lib\\router-server.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\server\\lib\\start-server.js'
+  ]
+}
+ GET / 500 in 34ms
+ ⨯ Error: Cannot find module './vendor-chunks/next.js'
+Require stack:
+- C:\whitepenguin\.next\server\webpack-runtime.js
+- C:\whitepenguin\.next\server\app\product\[id]\page.js
+- C:\whitepenguin\node_modules\next\dist\server\require.js
+- C:\whitepenguin\node_modules\next\dist\server\load-components.js
+- C:\whitepenguin\node_modules\next\dist\build\utils.js
+- C:\whitepenguin\node_modules\next\dist\server\dev\static-paths-worker.js
+- C:\whitepenguin\node_modules\next\dist\compiled\jest-worker\processChild.js
+    at Function.<anonymous> (node:internal/modules/cjs/loader:1383:15)
+    at C:\whitepenguin\node_modules\next\dist\server\require-hook.js:55:36
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1025:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1030:22)
+    at Function._load (node:internal/modules/cjs/loader:1192:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1463:12)
+    at mod.require (C:\whitepenguin\node_modules\next\dist\server\require-hook.js:65:28)
+    at require (node:internal/modules/helpers:147:16) {
+  type: 'Error',
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    'C:\\whitepenguin\\.next\\server\\webpack-runtime.js',
+    'C:\\whitepenguin\\.next\\server\\app\\product\\[id]\\page.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\server\\require.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\server\\load-components.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\build\\utils.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\server\\dev\\static-paths-worker.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\compiled\\jest-worker\\processChild.js'
+  ],
+  page: '/product/WP48412'
+}
+ ⨯ Error: Cannot find module './682.js'
+Require stack:
+- C:\whitepenguin\.next\server\webpack-runtime.js
+- C:\whitepenguin\.next\server\pages\_document.js
+- C:\whitepenguin\node_modules\next\dist\server\require.js
+- C:\whitepenguin\node_modules\next\dist\server\load-components.js
+- C:\whitepenguin\node_modules\next\dist\build\utils.js
+- C:\whitepenguin\node_modules\next\dist\server\dev\hot-middleware.js
+- C:\whitepenguin\node_modules\next\dist\server\dev\hot-reloader-webpack.js
+- C:\whitepenguin\node_modules\next\dist\server\lib\router-utils\setup-dev-bundler.js
+- C:\whitepenguin\node_modules\next\dist\server\lib\router-server.js
+- C:\whitepenguin\node_modules\next\dist\server\lib\start-server.js
+    at Function.<anonymous> (node:internal/modules/cjs/loader:1383:15)
+    at C:\whitepenguin\node_modules\next\dist\server\require-hook.js:55:36
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1025:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1030:22)
+    at Function._load (node:internal/modules/cjs/loader:1192:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1463:12)
+    at mod.require (C:\whitepenguin\node_modules\next\dist\server\require-hook.js:65:28)
+    at require (node:internal/modules/helpers:147:16)
+    at __webpack_require__.f.require (C:\whitepenguin\.next\server\webpack-runtime.js:198:28)
+    at C:\whitepenguin\.next\server\webpack-runtime.js:111:40
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\whitepenguin\.next\server\webpack-runtime.js:110:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\whitepenguin\.next\server\webpack-runtime.js:162:22)
+    at C:\whitepenguin\.next\server\pages\_document.js:1:335
+    at Object.<anonymous> (C:\whitepenguin\.next\server\pages\_document.js:1:376)
+    at Module._compile (node:internal/modules/cjs/loader:1706:14)
+    at Object..js (node:internal/modules/cjs/loader:1839:10)
+    at Module.load (node:internal/modules/cjs/loader:1441:32)
+    at Function._load (node:internal/modules/cjs/loader:1263:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1463:12)
+    at mod.require (C:\whitepenguin\node_modules\next\dist\server\require-hook.js:65:28)
+    at require (node:internal/modules/helpers:147:16)
+    at requirePage (C:\whitepenguin\node_modules\next\dist\server\require.js:109:84)
+    at C:\whitepenguin\node_modules\next\dist\server\load-components.js:72:65
+    at async Promise.all (index 0)
+    at async loadComponentsImpl (C:\whitepenguin\node_modules\next\dist\server\load-components.js:71:33)
+    at async DevServer.findPageComponentsImpl (C:\whitepenguin\node_modules\next\dist\server\next-server.js:710:36) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    'C:\\whitepenguin\\.next\\server\\webpack-runtime.js',
+    'C:\\whitepenguin\\.next\\server\\pages\\_document.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\server\\require.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\server\\load-components.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\build\\utils.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\server\\dev\\hot-middleware.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\server\\dev\\hot-reloader-webpack.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\server\\lib\\router-utils\\setup-dev-bundler.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\server\\lib\\router-server.js',
+    'C:\\whitepenguin\\node_modules\\next\\dist\\server\\lib\\start-server.js'
+  ]
+}
+ GET /product/WP48412 500 in 350ms
