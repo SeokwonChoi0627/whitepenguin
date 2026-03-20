@@ -26,7 +26,7 @@ export default function ProductDetailClient({ product, category, images, descrip
       router.push('/auth')
       return
     }
-    const stored = localStorage.getItem('quote-cart')
+    const stored = localStorage.getItem('quoteCart')
     const cart = stored ? JSON.parse(stored) : []
     const existing = cart.find(
       (item: { product: { id: string }; quantity: number }) => item.product.id === product.id
@@ -36,7 +36,7 @@ export default function ProductDetailClient({ product, category, images, descrip
     } else {
       cart.push({ product, quantity: 1 })
     }
-    localStorage.setItem('quote-cart', JSON.stringify(cart))
+    localStorage.setItem('quoteCart', JSON.stringify(cart))
     setAdded(true)
     setTimeout(() => setAdded(false), 2000)
   }

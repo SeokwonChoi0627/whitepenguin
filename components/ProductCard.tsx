@@ -7,9 +7,10 @@ import Link from 'next/link'
 interface Props {
   product: Product
   onAddToQuote?: (product: Product) => void
+  isAdded?: boolean
 }
 
-export default function ProductCard({ product, onAddToQuote }: Props) {
+export default function ProductCard({ product, onAddToQuote, isAdded }: Props) {
   return (
     <div className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 group">
       {/* 이미지 + 텍스트 영역 → 클릭 시 상세 페이지 이동 */}
@@ -55,10 +56,12 @@ export default function ProductCard({ product, onAddToQuote }: Props) {
         </span>
         <button
           onClick={() => onAddToQuote?.(product)}
-          className="flex items-center gap-1 bg-[#C4A882] text-white text-xs px-3 py-1.5 rounded-lg hover:bg-[#A08860] transition-colors"
+          className={`flex items-center gap-1 text-white text-xs px-3 py-1.5 rounded-lg transition-colors ${
+            isAdded ? 'bg-green-500' : 'bg-[#C4A882] hover:bg-[#A08860]'
+          }`}
         >
           <ShoppingCart size={12} />
-          발주
+          {isAdded ? '발주완료' : '발주'}
         </button>
       </div>
     </div>

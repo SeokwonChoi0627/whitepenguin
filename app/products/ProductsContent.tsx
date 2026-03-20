@@ -146,7 +146,7 @@ function ProductsInner({ thumbnailOverrides }: Props) {
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-4">
               {filtered.map((product) => (
-                <ProductCard key={product.id} product={product} onAddToQuote={handleAddToQuote} />
+                <ProductCard key={product.id} product={product} onAddToQuote={handleAddToQuote} isAdded={addedProduct === product.id} />
               ))}
             </div>
           )}
