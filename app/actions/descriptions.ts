@@ -1,6 +1,7 @@
 'use server'
 
 import { supabase } from '@/lib/supabase'
+import { uploadToStorage } from '@/lib/storage'
 import { revalidatePath } from 'next/cache'
 
 export async function getProductDescription(productId: string): Promise<string> {
@@ -37,19 +38,7 @@ export async function uploadDescriptionImage(
     const productId = formData.get('productId') as string
     if (!file || !productId) return { success: false, error: '파일 또는 상품 ID가 없습니다.' }
 
-    const ext = file.name.split('.').pop() ?? 'jpg'
-    const filename = `${Date.now()}.${ext}`
-    const storagePath = `${productId}/${filename}`
-
-    const { error } = await supabase.storage
-      .from('product-desc-images')
-      .upload(storagePath, file, { contentType: file.type })
-    if (error) throw error
-
-    const { data: { publicUrl } } = supabase.storage
-      .from('product-desc-images')
-      .getPublicUrl(storagePath)
-
+    const { publicUrl } = await uploadToStorage('product-desc-images', productId, file)
     return { success: true, path: publicUrl }
   } catch (e) {
     return { success: false, error: String(e) }

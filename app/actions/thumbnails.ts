@@ -1,6 +1,7 @@
 'use server'
 
 import { supabase } from '@/lib/supabase'
+import { uploadToStorage } from '@/lib/storage'
 import { revalidatePath } from 'next/cache'
 
 export async function getProductThumbnails(): Promise<Record<string, string>> {
@@ -22,23 +23,12 @@ export async function uploadProductThumbnail(
     const productId = formData.get('productId') as string
     if (!file || !productId) return { success: false, error: '파일 또는 상품 ID가 없습니다.' }
 
-    const ext = file.name.split('.').pop() ?? 'jpg'
-    const filename = `${Date.now()}.${ext}`
-    const storagePath = `${productId}/${filename}`
+    const { publicUrl } = await uploadToStorage('product-thumbnails-custom', productId, file)
 
-    const { error: uploadError } = await supabase.storage
-      .from('product-thumbnails-custom')
-      .upload(storagePath, file, { contentType: file.type })
-    if (uploadError) throw uploadError
-
-    const { data: { publicUrl } } = supabase.storage
-      .from('product-thumbnails-custom')
-      .getPublicUrl(storagePath)
-
-    const { error: dbError } = await supabase
+    const { error } = await supabase
       .from('product_thumbnails')
       .upsert({ product_id: productId, url: publicUrl })
-    if (dbError) throw dbError
+    if (error) throw error
 
     revalidatePath(`/product/${productId}`)
     revalidatePath('/products')

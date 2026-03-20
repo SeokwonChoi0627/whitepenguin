@@ -1,6 +1,7 @@
 'use server'
 
 import { supabase } from '@/lib/supabase'
+import { uploadToStorage, extractStoragePath } from '@/lib/storage'
 import { revalidatePath } from 'next/cache'
 
 export async function getProductImages(productId: string): Promise<string[]> {
@@ -33,32 +34,16 @@ export async function uploadProductImage(
     const productId = formData.get('productId') as string
     if (!file || !productId) return { success: false, error: '파일 또는 상품 ID가 없습니다.' }
 
-    const ext = file.name.split('.').pop() ?? 'jpg'
-    const filename = `${Date.now()}.${ext}`
-    const storagePath = `${productId}/${filename}`
-
-    const { error: uploadError } = await supabase.storage
-      .from('product-images')
-      .upload(storagePath, file, { contentType: file.type })
-    if (uploadError) throw uploadError
-
-    const { data: { publicUrl } } = supabase.storage
-      .from('product-images')
-      .getPublicUrl(storagePath)
-
-    const { data: existing } = await supabase
-      .from('product_images')
-      .select('position')
-      .eq('product_id', productId)
-      .order('position', { ascending: false })
-      .limit(1)
-
-    const position = existing && existing.length > 0 ? existing[0].position + 1 : 0
+    const { publicUrl, storagePath } = await uploadToStorage('product-images', productId, file)
 
     const { error: dbError } = await supabase
       .from('product_images')
-      .insert({ product_id: productId, url: publicUrl, position })
-    if (dbError) throw dbError
+      .insert({ product_id: productId, url: publicUrl, position: Date.now() })
+
+    if (dbError) {
+      await supabase.storage.from('product-images').remove([storagePath])
+      throw dbError
+    }
 
     revalidatePath(`/product/${productId}`)
     revalidatePath(`/admin/products/${productId}`)
@@ -80,12 +65,9 @@ export async function deleteProductImage(
       .eq('product_id', productId)
       .eq('url', imagePath)
 
-    if (imagePath.includes('supabase.co')) {
-      const url = new URL(imagePath)
-      const parts = url.pathname.split('/product-images/')
-      if (parts.length > 1) {
-        await supabase.storage.from('product-images').remove([parts[1]])
-      }
+    const storagePath = extractStoragePath(imagePath, 'product-images')
+    if (storagePath) {
+      await supabase.storage.from('product-images').remove([storagePath])
     }
 
     revalidatePath(`/product/${productId}`)

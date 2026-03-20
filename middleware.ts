@@ -7,7 +7,7 @@ export default withAuth(
     const adminEmail = process.env.ADMIN_EMAIL
 
     if (req.nextUrl.pathname.startsWith('/admin')) {
-      if (!token || token.email !== adminEmail) {
+      if (token?.email !== adminEmail) {
         return NextResponse.redirect(new URL('/', req.url))
       }
     }
