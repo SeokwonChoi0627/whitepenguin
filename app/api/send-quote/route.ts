@@ -3,6 +3,8 @@ import nodemailer from 'nodemailer'
 import * as XLSX from 'xlsx'
 import fs from 'fs'
 import path from 'path'
+import { getToken } from 'next-auth/jwt'
+import { supabase } from '@/lib/supabase'
 
 // ─── 카테고리 한국어 라벨 ────────────────────────────────────
 const CATEGORY_LABELS: Record<string, string> = {
@@ -216,6 +218,7 @@ function buildQuoteEmail(
 // ─── 메인 POST 핸들러 ─────────────────────────────────────────
 export async function POST(req: NextRequest) {
   try {
+    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET })
     const formData = await req.formData()
 
     const companyName = formData.get('companyName') as string
@@ -357,6 +360,23 @@ export async function POST(req: NextRequest) {
         html: customerHtmlBody,
       })
     }
+
+    // ── Supabase DB 저장 ───────────────────────────────────────
+    await supabase.from('quotes').insert({
+      order_number: generateOrderNumber(),
+      user_id: token?.id as string | null ?? null,
+      company_name: companyName,
+      representative,
+      phone,
+      email,
+      address,
+      business_number: businessNumber || null,
+      notes: notes || null,
+      cart,
+      total_amount: totalBeforeDiscount,
+      discount_rate: discountRate,
+      final_total: finalTotal,
+    })
 
     return NextResponse.json({ ok: true })
   } catch (err) {
