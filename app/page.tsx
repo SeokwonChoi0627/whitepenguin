@@ -1,12 +1,7 @@
 import Link from 'next/link'
 import { CATEGORIES } from '@/lib/categories'
-import { ArrowRight, CheckCircle, Package, FileText, Phone } from 'lucide-react'
-
-const SAMPLE_POSTS = [
-  { id: '1', title: '반느통으로 만든 르뱅 캄파뉴 — 크러스트가 달라요', author: '베이커리 달빛', category: '레시피', likes: 42, emoji: '🍞' },
-  { id: '2', title: '고양이발바닥틀로 만든 말차 피낭시에 후기', author: '카페 온도', category: '결과물', likes: 38, emoji: '🍵' },
-  { id: '3', title: '초미니타르트틀 — 단체 납품용으로 최고입니다', author: '구움과자 공방', category: '결과물', likes: 27, emoji: '🥧' },
-]
+import { ArrowRight, CheckCircle, Package, FileText, Phone, Heart, ThumbsUp, Star } from 'lucide-react'
+import { supabase } from '@/lib/supabase'
 
 const STEPS = [
   { icon: <Package size={24} />, step: '01', title: '회원가입', desc: '네이버·카카오로 간편 가입' },
@@ -15,7 +10,37 @@ const STEPS = [
   { icon: <Phone size={24} />, step: '04', title: '담당자 확인', desc: '1영업일 내 견적 확인 연락' },
 ]
 
-export default function HomePage() {
+const CATEGORY_COLOR: Record<string, string> = {
+  '레시피': 'bg-orange-50 text-orange-600',
+  '결과물': 'bg-purple-50 text-purple-600',
+  '팁': 'bg-blue-50 text-blue-600',
+  '문의': 'bg-gray-100 text-gray-500',
+}
+
+function StarRow({ rating }: { rating: number }) {
+  return (
+    <div className="flex gap-0.5">
+      {[1, 2, 3, 4, 5].map((s) => (
+        <Star key={s} size={13} className={s <= rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-200 fill-gray-200'} />
+      ))}
+    </div>
+  )
+}
+
+export default async function HomePage() {
+  const [{ data: communityPosts }, { data: reviews }] = await Promise.all([
+    supabase
+      .from('community_posts')
+      .select('id, title, author_name, category, likes, emoji, images')
+      .order('created_at', { ascending: false })
+      .limit(3),
+    supabase
+      .from('reviews')
+      .select('id, title, content, author_name, category, rating, product_name, likes, images')
+      .order('created_at', { ascending: false })
+      .limit(3),
+  ])
+
   return (
     <div>
       {/* ── 히어로 ─────────────────────────────────── */}
@@ -65,7 +90,6 @@ export default function HomePage() {
             전체 보기 <ArrowRight size={14} />
           </Link>
         </div>
-
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
           {CATEGORIES.map((cat) => (
             <Link key={cat.key} href={`/category/${cat.key}`}
@@ -132,7 +156,6 @@ export default function HomePage() {
               </ul>
             </div>
             <div className="flex flex-col items-end justify-end gap-3 h-full pr-2">
-              {/* 펭귄 — 중앙 정렬로 상하 여백 클리핑 */}
               <div style={{ height: '160px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', transform: 'translateX(144px) translateY(24px)' }}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
@@ -151,7 +174,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── 커뮤니티 미리보기 ─────────────────────────── */}
+      {/* ── 커뮤니티 최근 게시물 ─────────────────────── */}
       <section className="bg-[#F7F3EE] py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-end justify-between mb-8">
@@ -163,29 +186,97 @@ export default function HomePage() {
               더 보기 <ArrowRight size={14} />
             </Link>
           </div>
+
+          {!communityPosts || communityPosts.length === 0 ? (
+            <div className="text-center py-16 text-gray-400">
+              <p className="text-4xl mb-3">✏️</p>
+              <p className="text-sm mb-4">아직 작성된 글이 없습니다.</p>
+              <Link href="/community"
+                className="inline-block border border-[#333333] text-[#333333] text-sm font-medium px-5 py-2 rounded-xl hover:bg-[#EDE4D8] transition-colors">
+                커뮤니티 가기
+              </Link>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+              {communityPosts.map((post) => (
+                <Link key={post.id} href={`/community/${post.id}`}
+                  className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-md hover:-translate-y-0.5 transition-all">
+                  <div className="h-40 bg-gradient-to-br from-[#F7F3EE] to-[#EDE4D8] flex items-center justify-center overflow-hidden">
+                    {post.images && post.images.length > 0 ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={post.images[0]} alt="" className="w-full h-full object-cover" />
+                    ) : (
+                      <span className="text-5xl">{post.emoji || '📝'}</span>
+                    )}
+                  </div>
+                  <div className="p-4">
+                    <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${CATEGORY_COLOR[post.category] || 'bg-gray-100 text-gray-500'}`}>
+                      {post.category}
+                    </span>
+                    <h3 className="font-semibold text-[#333333] mt-2 mb-3 text-sm leading-snug line-clamp-2">
+                      {post.title}
+                    </h3>
+                    <div className="flex items-center justify-between text-xs text-gray-400">
+                      <span>{post.author_name}</span>
+                      <span className="flex items-center gap-1"><Heart size={11} /> {post.likes ?? 0}</span>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* ── 리뷰 최근 게시물 ─────────────────────────── */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="flex items-end justify-between mb-8">
+          <div>
+            <p className="text-sm font-semibold text-[#C4A882] mb-1">REVIEWS</p>
+            <h2 className="text-2xl font-bold text-[#333333]">고객 리뷰</h2>
+          </div>
+          <Link href="/reviews" className="text-sm text-[#333333] font-medium hover:underline flex items-center gap-1">
+            더 보기 <ArrowRight size={14} />
+          </Link>
+        </div>
+
+        {!reviews || reviews.length === 0 ? (
+          <div className="text-center py-16 text-gray-400">
+            <p className="text-4xl mb-3">⭐</p>
+            <p className="text-sm mb-4">아직 작성된 리뷰가 없습니다.</p>
+            <Link href="/reviews"
+              className="inline-block border border-[#333333] text-[#333333] text-sm font-medium px-5 py-2 rounded-xl hover:bg-[#F7F3EE] transition-colors">
+              리뷰 보기
+            </Link>
+          </div>
+        ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            {SAMPLE_POSTS.map((post) => (
-              <Link key={post.id} href={`/community/${post.id}`}
-                className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-md hover:-translate-y-0.5 transition-all">
-                <div className="h-36 bg-[#EDE4D8] flex items-center justify-center text-5xl">
-                  {post.emoji}
-                </div>
+            {reviews.map((review) => (
+              <Link key={review.id} href={`/reviews/${review.id}`}
+                className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-md hover:-translate-y-0.5 transition-all block">
+                {review.images && review.images.length > 0 && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={review.images[0]} alt="" className="w-full h-40 object-cover" />
+                )}
                 <div className="p-4">
-                  <span className="text-xs font-medium text-[#A08860] bg-[#EDE4D8] px-2 py-0.5 rounded-full">
-                    {post.category}
-                  </span>
-                  <h3 className="font-semibold text-[#333333] mt-2 mb-3 text-sm leading-snug">
-                    {post.title}
-                  </h3>
+                  <div className="flex items-center justify-between mb-2">
+                    <StarRow rating={review.rating} />
+                    <span className="text-xs bg-[#EDE4D8] text-[#A08860] px-2 py-0.5 rounded-full font-medium">
+                      {review.category}
+                    </span>
+                  </div>
+                  <p className="text-xs text-[#C4A882] font-medium mb-1">{review.product_name}</p>
+                  <h3 className="font-semibold text-[#333333] text-sm leading-snug mb-2 line-clamp-1">{review.title}</h3>
+                  <p className="text-xs text-gray-500 line-clamp-2 mb-3">{review.content}</p>
                   <div className="flex items-center justify-between text-xs text-gray-400">
-                    <span>{post.author}</span>
-                    <span>♥ {post.likes}</span>
+                    <span className="font-medium text-gray-500">{review.author_name}</span>
+                    <span className="flex items-center gap-1"><ThumbsUp size={11} /> {review.likes ?? 0}</span>
                   </div>
                 </div>
               </Link>
             ))}
           </div>
-        </div>
+        )}
       </section>
     </div>
   )
