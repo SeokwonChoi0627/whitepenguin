@@ -84,7 +84,8 @@ function buildQuoteEmail(
   totalBeforeDiscount: number,
   discountAmount: number,
   finalTotal: number,
-  logoBase64: string
+  logoBase64: string,
+  showRounding: boolean
 ): string {
   const today = new Date()
   const dateStr = `${today.getFullYear()}.${String(today.getMonth() + 1).padStart(2, '0')}.${String(today.getDate()).padStart(2, '0')} (${['일','월','화','수','목','금','토'][today.getDay()]})`
@@ -195,7 +196,7 @@ function buildQuoteEmail(
       <tr style="background:#f0f0f0;">
         <td colspan="5" style="border:1px solid #ccc;padding:7px 10px;text-align:center;font-weight:bold;">소 계</td>
         <td style="border:1px solid #ccc;padding:7px 10px;text-align:right;font-weight:bold;">${finalTotal.toLocaleString()}</td>
-        <td style="border:1px solid #ccc;padding:7px 10px;text-align:center;font-size:12px;color:#555;">천원미만 절사</td>
+        <td style="border:1px solid #ccc;padding:7px 10px;text-align:center;font-size:12px;color:#555;">${showRounding ? '천원미만 절사' : ''}</td>
       </tr>
     </tbody>
   </table>
@@ -249,8 +250,11 @@ export async function POST(req: NextRequest) {
       (sum, item) => sum + item.product.priceVatIncluded * item.quantity, 0
     )
     const discountAmount = Math.round(totalBeforeDiscount * discountRate)
-    // 천원 미만 절사
-    const finalTotal = Math.floor((totalBeforeDiscount - discountAmount) / 1000) * 1000
+    const afterDiscount = totalBeforeDiscount - discountAmount
+    // 10만원 이상일 때만 천원 미만 절사
+    const finalTotal = afterDiscount >= 100000
+      ? Math.floor(afterDiscount / 1000) * 1000
+      : afterDiscount
 
     // ── 엑셀 생성 ──────────────────────────────────────────────
     const excelBuffer = buildExcel(representative, phone, address, notes, cart)
@@ -320,7 +324,8 @@ export async function POST(req: NextRequest) {
     const logoPath = path.join(process.cwd(), 'public', 'logo-quote.png')
     const logoBase64 = `data:image/png;base64,${fs.readFileSync(logoPath).toString('base64')}`
     const customerHtmlBody = buildQuoteEmail(
-      companyName, cart, discountRate, totalBeforeDiscount, discountAmount, finalTotal, logoBase64
+      companyName, cart, discountRate, totalBeforeDiscount, discountAmount, finalTotal, logoBase64,
+      afterDiscount >= 100000
     )
 
     // ── 메일 발송 ──────────────────────────────────────────────
