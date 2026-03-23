@@ -4,8 +4,18 @@ import { useState, useEffect, useRef } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { CartItem } from '@/lib/types'
-import { Trash2, Plus, Minus, FileText, CheckCircle, Upload, X } from 'lucide-react'
+import { Trash2, Plus, Minus, FileText, CheckCircle, Upload, X, Search } from 'lucide-react'
 import Link from 'next/link'
+
+declare global {
+  interface Window {
+    daum: {
+      Postcode: new (config: {
+        oncomplete: (data: { roadAddress: string; jibunAddress: string }) => void
+      }) => { open: () => void }
+    }
+  }
+}
 
 const EMPTY_FORM = {
   companyName: '',
@@ -14,6 +24,7 @@ const EMPTY_FORM = {
   phone: '',
   email: '',
   address: '',
+  addressDetail: '',
   notes: '',
 }
 
@@ -27,6 +38,30 @@ export default function QuotePage() {
   const [submitError, setSubmitError] = useState(false)
   const [bizFile, setBizFile] = useState<File | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const addressDetailRef = useRef<HTMLInputElement>(null)
+
+  const openAddressSearch = () => {
+    const script = document.createElement('script')
+    script.src = 'https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js'
+    script.onload = () => {
+      new window.daum.Postcode({
+        oncomplete: (data) => {
+          setForm((prev) => ({ ...prev, address: data.roadAddress || data.jibunAddress }))
+          setTimeout(() => addressDetailRef.current?.focus(), 100)
+        },
+      }).open()
+    }
+    if (window.daum?.Postcode) {
+      new window.daum.Postcode({
+        oncomplete: (data) => {
+          setForm((prev) => ({ ...prev, address: data.roadAddress || data.jibunAddress }))
+          setTimeout(() => addressDetailRef.current?.focus(), 100)
+        },
+      }).open()
+    } else {
+      document.head.appendChild(script)
+    }
+  }
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -67,7 +102,8 @@ export default function QuotePage() {
     formData.append('representative', form.representative)
     formData.append('phone', form.phone)
     formData.append('email', form.email)
-    formData.append('address', form.address)
+    const fullAddress = form.addressDetail ? `${form.address} ${form.addressDetail}` : form.address
+    formData.append('address', fullAddress)
     formData.append('businessNumber', form.businessNumber)
     formData.append('notes', form.notes)
     formData.append('cart', JSON.stringify(cart))
@@ -215,7 +251,6 @@ export default function QuotePage() {
                 { key: 'representative', label: '담당자명', placeholder: '홍길동', required: true },
                 { key: 'phone', label: '연락처', placeholder: '010-0000-0000', required: true },
                 { key: 'email', label: '이메일', placeholder: 'contact@example.com', required: true },
-                { key: 'address', label: '배송지 주소', placeholder: '서울시 강남구 ...', required: true },
                 { key: 'businessNumber', label: '사업자등록번호', placeholder: '000-00-00000', required: false },
               ].map((field) => (
                 <div key={field.key}>
@@ -236,6 +271,40 @@ export default function QuotePage() {
                   />
                 </div>
               ))}
+
+              {/* 배송지 주소 — 카카오 주소 검색 */}
+              <div>
+                <label className="block text-xs font-semibold text-gray-600 mb-1">
+                  배송지 주소<span className="text-red-400 ml-0.5">*</span>
+                </label>
+                <div className="flex gap-2 mb-1.5">
+                  <input
+                    type="text"
+                    placeholder="주소 검색 버튼을 눌러주세요"
+                    required
+                    readOnly
+                    value={form.address}
+                    onClick={openAddressSearch}
+                    className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm bg-gray-50 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#EDE4D8] focus:border-[#C4A882]"
+                  />
+                  <button
+                    type="button"
+                    onClick={openAddressSearch}
+                    className="flex items-center gap-1.5 px-3 py-2 bg-[#333333] text-white text-xs font-semibold rounded-lg hover:bg-[#1a1a1a] transition-colors whitespace-nowrap"
+                  >
+                    <Search size={13} />
+                    주소 검색
+                  </button>
+                </div>
+                <input
+                  ref={addressDetailRef}
+                  type="text"
+                  placeholder="상세 주소 입력 (동/호수, 건물명 등)"
+                  value={form.addressDetail}
+                  onChange={(e) => setForm({ ...form, addressDetail: e.target.value })}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#EDE4D8] focus:border-[#C4A882]"
+                />
+              </div>
 
               {/* 사업자등록증 업로드 (선택) */}
               <div>
