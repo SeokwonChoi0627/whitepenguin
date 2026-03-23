@@ -286,7 +286,7 @@ export default function QnaPage() {
                       </p>
                     </div>
                     <p className="text-xs text-gray-400 mt-0.5">
-                      {item.is_private && !isOwner(item) ? '비공개' : item.author_name} · {new Date(item.created_at).toLocaleDateString('ko-KR')}
+                      {item.is_private && !isOwner(item) ? '비공개' : item.author_name} · {new Date(item.created_at).toLocaleDateString('ko-KR')} {new Date(item.created_at).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}
                     </p>
                   </div>
                   {item.answered
