@@ -299,9 +299,9 @@ export default async function HomePage() {
               href="https://shop.coupang.com/whitepenguin"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-3 bg-[#C4A882] text-white font-bold px-8 py-4 rounded-xl hover:bg-[#A08860] transition-colors w-full sm:w-auto justify-center"
+              className="flex items-center gap-3 bg-[#E42327] text-white font-bold px-8 py-4 rounded-xl hover:bg-[#C41E22] transition-colors w-full sm:w-auto justify-center"
             >
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 2C13.5 2 9 6.5 9 11a4.5 4.5 0 0 0 9 0c0-4.5-4.5-9-4.5-9zm0 11.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5zM6.5 8S3 11.5 3 14.5a3.5 3.5 0 0 0 7 0C10 11.5 6.5 8 6.5 8zm0 8a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zM4 19h16v2H4z"/></svg>
               쿠팡
             </a>
             <a
