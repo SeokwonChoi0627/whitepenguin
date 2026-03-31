@@ -120,10 +120,18 @@ export default function QuotePage() {
     }
   }
 
+  const totalQty = cart.reduce((sum, item) => sum + item.quantity, 0)
+  const discountRate = totalQty >= 100 ? 0.15 : totalQty >= 50 ? 0.12 : totalQty >= 10 ? 0.10 : 0
   const totalAmount = cart.reduce(
     (sum, item) => sum + item.product.priceVatIncluded * item.quantity,
     0
   )
+  const discountAmount = Math.round(totalAmount * discountRate)
+  const finalTotal = discountAmount > 0
+    ? (totalAmount - discountAmount >= 100000
+      ? Math.floor((totalAmount - discountAmount) / 1000) * 1000
+      : totalAmount - discountAmount)
+    : totalAmount
 
   if (status === 'loading' || !session) {
     return <div className="min-h-screen flex items-center justify-center text-gray-400">로딩 중...</div>
@@ -206,11 +214,32 @@ export default function QuotePage() {
                     </div>
                   ))}
 
-                  <div className="px-5 py-4 bg-gray-50 flex justify-between items-center">
-                    <span className="font-semibold text-gray-700">합계 (VAT 포함)</span>
-                    <span className="text-xl font-black text-[#333333]">
-                      {totalAmount.toLocaleString()}원
-                    </span>
+                  <div className="px-5 py-4 bg-gray-50 space-y-2">
+                    {discountRate > 0 && (
+                      <>
+                        <div className="flex justify-between items-center text-sm text-gray-500">
+                          <span>정가 합계</span>
+                          <span>{totalAmount.toLocaleString()}원</span>
+                        </div>
+                        <div className="flex justify-between items-center text-sm text-red-500 font-semibold">
+                          <span>
+                            수량 할인 ({discountRate * 100}%↓ · {totalQty}개 이상)
+                          </span>
+                          <span>- {discountAmount.toLocaleString()}원</span>
+                        </div>
+                      </>
+                    )}
+                    <div className="flex justify-between items-center pt-1 border-t border-gray-200">
+                      <span className="font-semibold text-gray-700">최종 합계 (VAT 포함)</span>
+                      <span className="text-xl font-black text-[#333333]">
+                        {finalTotal.toLocaleString()}원
+                      </span>
+                    </div>
+                    {discountRate === 0 && totalQty < 10 && totalQty > 0 && (
+                      <p className="text-xs text-gray-400 text-right">
+                        10개 이상 담으면 10% 할인이 적용됩니다
+                      </p>
+                    )}
                   </div>
                 </div>
               )}
@@ -388,9 +417,15 @@ export default function QuotePage() {
                   <span className="text-gray-500">품목 수</span>
                   <span className="font-semibold text-gray-900">{cart.length}종 / 총 {cart.reduce((s, i) => s + i.quantity, 0)}개</span>
                 </div>
+                {discountRate > 0 && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-500">할인 ({discountRate * 100}%)</span>
+                    <span className="text-red-500 font-semibold">- {discountAmount.toLocaleString()}원</span>
+                  </div>
+                )}
                 <div className="border-t border-[#E8DDD0] pt-2 flex justify-between text-sm">
-                  <span className="text-gray-500">합계금액</span>
-                  <span className="font-black text-[#333333] text-base">{totalAmount.toLocaleString()}원</span>
+                  <span className="text-gray-500">최종 합계금액</span>
+                  <span className="font-black text-[#333333] text-base">{finalTotal.toLocaleString()}원</span>
                 </div>
               </div>
               <p className="text-xs text-gray-400 text-center">

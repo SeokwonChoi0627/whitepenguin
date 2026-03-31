@@ -90,7 +90,7 @@ function buildQuoteEmail(
   const today = new Date()
   const dateStr = `${today.getFullYear()}.${String(today.getMonth() + 1).padStart(2, '0')}.${String(today.getDate()).padStart(2, '0')} (${['일','월','화','수','목','금','토'][today.getDay()]})`
 
-  const discountLabel = discountRate === 0.15 ? '업체 특가<br>15% 할인 단가 적용' : '업체 특가<br>10% 할인 단가 적용'
+  const discountLabel = discountRate === 0.15 ? '업체 특가<br>15% 할인 단가 적용' : discountRate === 0.12 ? '업체 특가<br>12% 할인 단가 적용' : '업체 특가<br>10% 할인 단가 적용'
 
   const productRows = cart.map((item, idx) => {
     const categoryLabel = CATEGORY_LABELS[item.product.category ?? ''] ?? ''
@@ -244,7 +244,7 @@ export async function POST(req: NextRequest) {
 
     // ── 할인 계산 ──────────────────────────────────────────────
     const totalQty = cart.reduce((sum, item) => sum + item.quantity, 0)
-    const discountRate = totalQty >= 50 ? 0.15 : totalQty >= 10 ? 0.10 : 0
+    const discountRate = totalQty >= 100 ? 0.15 : totalQty >= 50 ? 0.12 : totalQty >= 10 ? 0.10 : 0
 
     const totalBeforeDiscount = cart.reduce(
       (sum, item) => sum + item.product.priceVatIncluded * item.quantity, 0
