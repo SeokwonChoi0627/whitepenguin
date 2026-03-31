@@ -146,6 +146,7 @@ export default function QuotePage() {
             발주서 작성
           </h1>
           <p className="text-gray-500 text-sm mt-1">상품을 선택하고 업체 정보를 입력해 주세요.</p>
+          <p className="text-gray-500 text-sm mt-1">10개 이상 10%, 50개 이상 12%, 100개 이상 15% 할인 적용</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
