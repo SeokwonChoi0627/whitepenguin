@@ -1,7 +1,6 @@
 import { NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import NaverProvider from 'next-auth/providers/naver'
-import KakaoProvider from 'next-auth/providers/kakao'
 import bcrypt from 'bcryptjs'
 import { supabase } from '@/lib/supabase'
 
@@ -11,10 +10,48 @@ export const authOptions: NextAuthOptions = {
       clientId: process.env.NAVER_CLIENT_ID!,
       clientSecret: process.env.NAVER_CLIENT_SECRET!,
     }),
-    KakaoProvider({
-      clientId: process.env.KAKAO_CLIENT_ID!,
-      clientSecret: process.env.KAKAO_CLIENT_ID!, // 보안탭 미설정 앱은 clientId로 대체
-    }),
+    // 카카오 커스텀 프로바이더 (Client Secret 미설정 앱용)
+    {
+      id: 'kakao',
+      name: 'Kakao',
+      type: 'oauth',
+      authorization: {
+        url: 'https://kauth.kakao.com/oauth/authorize',
+        params: { scope: 'profile_nickname account_email' },
+      },
+      token: {
+        url: 'https://kauth.kakao.com/oauth/token',
+        async request(context: any) {
+          const { provider, params } = context
+          const body = new URLSearchParams({
+            grant_type: 'authorization_code',
+            client_id: provider.clientId,
+            redirect_uri: provider.callbackUrl,
+            code: params.code,
+          })
+          const res = await fetch('https://kauth.kakao.com/oauth/token', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: body.toString(),
+          })
+          const tokens = await res.json()
+          return { tokens }
+        },
+      },
+      userinfo: {
+        url: 'https://kapi.kakao.com/v2/user/me',
+      },
+      profile(profile: any) {
+        return {
+          id: String(profile.id),
+          name: profile.kakao_account?.profile?.nickname ?? '',
+          email: profile.kakao_account?.email ?? '',
+          image: profile.kakao_account?.profile?.profile_image_url ?? null,
+        }
+      },
+      clientId: process.env.KAKAO_CLIENT_ID,
+      clientSecret: '',
+    } as any,
     CredentialsProvider({
       name: 'credentials',
       credentials: {
