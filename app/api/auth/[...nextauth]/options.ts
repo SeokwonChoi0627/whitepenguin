@@ -26,7 +26,7 @@ export const authOptions: NextAuthOptions = {
           const body = new URLSearchParams({
             grant_type: 'authorization_code',
             client_id: provider.clientId,
-            redirect_uri: provider.callbackUrl,
+            redirect_uri: `${process.env.NEXTAUTH_URL}/api/auth/callback/kakao`,
             code: params.code,
           })
           const res = await fetch('https://kauth.kakao.com/oauth/token', {
