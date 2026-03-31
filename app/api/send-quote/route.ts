@@ -47,6 +47,14 @@ function generateOrderNumber(): string {
 }
 
 // ─── 엑셀 생성 ────────────────────────────────────────────────
+// ─── 전화번호 포맷 정규화 ─────────────────────────────────────
+function formatPhone(raw: string): string {
+  const digits = raw.replace(/\D/g, '')
+  if (digits.length === 11) return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`
+  if (digits.length === 10) return `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6)}`
+  return raw // 형식이 맞지 않으면 원본 그대로
+}
+
 function buildExcel(
   representative: string,
   phone: string,
@@ -55,9 +63,10 @@ function buildExcel(
   cart: { product: { name: string; size?: string }; quantity: number }[]
 ): Buffer {
   const orderNumber = generateOrderNumber()
+  const formattedPhone = formatPhone(phone)
   const rows = cart.map((item) => ({
     성함: representative,
-    전화번호: phone,
+    전화번호: formattedPhone,
     주소: address,
     상품명: item.product.name + (item.product.size ? ` (${item.product.size})` : ''),
     수량: item.quantity,
@@ -71,6 +80,14 @@ function buildExcel(
     { wch: 12 }, { wch: 16 }, { wch: 36 },
     { wch: 24 }, { wch: 8 }, { wch: 14 }, { wch: 30 },
   ]
+
+  // 전화번호 열(B열) 전체를 텍스트 서식으로 지정 — 앞자리 0 보존
+  const rowCount = rows.length
+  for (let r = 1; r <= rowCount; r++) {
+    const cellRef = `B${r + 1}` // 헤더(B1) 제외, 데이터는 B2부터
+    if (ws[cellRef]) ws[cellRef].t = 's'
+  }
+
   const wb = XLSX.utils.book_new()
   XLSX.utils.book_append_sheet(wb, ws, 'Sheet1')
   return XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' }) as Buffer
