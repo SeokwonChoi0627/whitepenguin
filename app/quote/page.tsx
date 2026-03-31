@@ -88,6 +88,10 @@ export default function QuotePage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+    if (!form.address) {
+      alert('배송지 주소를 입력해 주세요.')
+      return
+    }
     setShowConfirmModal(true)
   }
 
