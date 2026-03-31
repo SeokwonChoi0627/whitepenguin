@@ -301,7 +301,10 @@ export default async function HomePage() {
               rel="noopener noreferrer"
               className="flex items-center gap-3 bg-[#E42327] text-white font-bold px-8 py-4 rounded-xl hover:bg-[#C41E22] transition-colors w-full sm:w-auto justify-center"
             >
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 2C13.5 2 9 6.5 9 11a4.5 4.5 0 0 0 9 0c0-4.5-4.5-9-4.5-9zm0 11.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5zM6.5 8S3 11.5 3 14.5a3.5 3.5 0 0 0 7 0C10 11.5 6.5 8 6.5 8zm0 8a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zM4 19h16v2H4z"/></svg>
+              <svg width="22" height="22" viewBox="0 0 100 100">
+                <polygon fill="currentColor" points="50,3 59.8,13.3 73.5,9.3 76.9,23.1 90.7,26.5 86.7,40.2 97,50 86.7,59.8 90.7,73.5 76.9,76.9 73.5,90.7 59.8,86.7 50,97 40.2,86.7 26.5,90.7 23.1,76.9 9.3,73.5 13.3,59.8 3,50 13.3,40.2 9.3,26.5 23.1,23.1 26.5,9.3 40.2,13.3"/>
+                <text x="50" y="67" textAnchor="middle" fontSize="50" fontWeight="900" fontFamily="Arial,sans-serif" fill="#E42327">C</text>
+              </svg>
               쿠팡
             </a>
             <a
