@@ -1,6 +1,7 @@
 import { NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import NaverProvider from 'next-auth/providers/naver'
+import KakaoProvider from 'next-auth/providers/kakao'
 import bcrypt from 'bcryptjs'
 import { supabase } from '@/lib/supabase'
 
@@ -9,6 +10,10 @@ export const authOptions: NextAuthOptions = {
     NaverProvider({
       clientId: process.env.NAVER_CLIENT_ID!,
       clientSecret: process.env.NAVER_CLIENT_SECRET!,
+    }),
+    KakaoProvider({
+      clientId: process.env.KAKAO_CLIENT_ID!,
+      clientSecret: process.env.KAKAO_CLIENT_ID!, // 보안탭 미설정 앱은 clientId로 대체
     }),
     CredentialsProvider({
       name: 'credentials',
@@ -43,7 +48,7 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async signIn({ user, account }) {
       // 소셜 로그인 시 Supabase users 테이블에 자동 upsert
-      if (account?.provider === 'naver') {
+      if (account?.provider === 'naver' || account?.provider === 'kakao') {
         const email = user.email
         if (!email) return false
 
@@ -72,7 +77,7 @@ export const authOptions: NextAuthOptions = {
         token.phone = (user as any).phone
       }
       // 소셜 로그인 후 DB에서 추가 정보 불러오기
-      if (account?.provider === 'naver' && token.email) {
+      if ((account?.provider === 'naver' || account?.provider === 'kakao') && token.email) {
         const { data: dbUser } = await supabase
           .from('users')
           .select('id, company_name, phone')

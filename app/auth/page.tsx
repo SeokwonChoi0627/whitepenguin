@@ -224,6 +224,18 @@ export default function AuthPage() {
             </svg>
             네이버로 {mode === 'login' ? '로그인' : '시작하기'}
           </button>
+
+          {/* 카카오 로그인 버튼 */}
+          <button
+            type="button"
+            onClick={() => signIn('kakao', { callbackUrl: '/mypage' })}
+            className="mt-2.5 w-full flex items-center justify-center gap-2.5 bg-[#FEE500] text-[#191919] font-semibold py-3 rounded-xl hover:bg-[#f0d800] transition-colors"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 3C6.477 3 2 6.477 2 10.8c0 2.7 1.612 5.074 4.07 6.518L5.1 21l4.388-2.308A11.6 11.6 0 0 0 12 18.6c5.523 0 10-3.477 10-7.8S17.523 3 12 3z"/>
+            </svg>
+            카카오로 {mode === 'login' ? '로그인' : '시작하기'}
+          </button>
         </div>
 
         <p className="text-center text-xs text-gray-400 mt-6">
