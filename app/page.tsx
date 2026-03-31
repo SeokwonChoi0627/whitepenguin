@@ -96,7 +96,7 @@ export default async function HomePage() {
               className="group bg-white border border-gray-200 rounded-xl p-5 hover:border-[#C4A882] hover:shadow-md transition-all">
               <div className="text-3xl mb-3">{cat.emoji}</div>
               <h3 className="font-bold text-[#333333] mb-1">{cat.label}</h3>
-              <p className="text-xs text-gray-500 leading-relaxed">{cat.description}</p>
+              <p className="text-xs text-gray-500 leading-relaxed break-keep">{cat.description}</p>
             </Link>
           ))}
           <Link href="/products"
