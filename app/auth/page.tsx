@@ -205,6 +205,25 @@ export default function AuthPage() {
               </button>
             </form>
           )}
+
+          {/* 소셜 로그인 구분선 */}
+          <div className="flex items-center gap-3 mt-5">
+            <div className="flex-1 h-px bg-gray-200" />
+            <span className="text-xs text-gray-400">또는</span>
+            <div className="flex-1 h-px bg-gray-200" />
+          </div>
+
+          {/* 네이버 로그인 버튼 */}
+          <button
+            type="button"
+            onClick={() => signIn('naver', { callbackUrl: '/mypage' })}
+            className="mt-3 w-full flex items-center justify-center gap-2.5 bg-[#03C75A] text-white font-semibold py-3 rounded-xl hover:bg-[#02b350] transition-colors"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M16.273 12.845L7.376 0H0v24h7.727V11.155L16.624 24H24V0h-7.727z"/>
+            </svg>
+            네이버로 {mode === 'login' ? '로그인' : '시작하기'}
+          </button>
         </div>
 
         <p className="text-center text-xs text-gray-400 mt-6">

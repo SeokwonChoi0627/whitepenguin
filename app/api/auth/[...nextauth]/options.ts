@@ -1,10 +1,15 @@
 import { NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
+import NaverProvider from 'next-auth/providers/naver'
 import bcrypt from 'bcryptjs'
 import { supabase } from '@/lib/supabase'
 
 export const authOptions: NextAuthOptions = {
   providers: [
+    NaverProvider({
+      clientId: process.env.NAVER_CLIENT_ID!,
+      clientSecret: process.env.NAVER_CLIENT_SECRET!,
+    }),
     CredentialsProvider({
       name: 'credentials',
       credentials: {
@@ -36,11 +41,48 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async signIn({ user, account }) {
+      // 소셜 로그인 시 Supabase users 테이블에 자동 upsert
+      if (account?.provider === 'naver') {
+        const email = user.email
+        if (!email) return false
+
+        const { data: existing } = await supabase
+          .from('users')
+          .select('id')
+          .eq('email', email)
+          .single()
+
+        if (!existing) {
+          await supabase.from('users').insert({
+            email,
+            name: user.name ?? '',
+            company_name: null,
+            phone: null,
+            password_hash: null,
+          })
+        }
+      }
+      return true
+    },
+    async jwt({ token, user, account }) {
       if (user) {
         token.id = user.id
         token.companyName = (user as any).companyName
         token.phone = (user as any).phone
+      }
+      // 소셜 로그인 후 DB에서 추가 정보 불러오기
+      if (account?.provider === 'naver' && token.email) {
+        const { data: dbUser } = await supabase
+          .from('users')
+          .select('id, company_name, phone')
+          .eq('email', token.email)
+          .single()
+        if (dbUser) {
+          token.id = dbUser.id
+          token.companyName = dbUser.company_name
+          token.phone = dbUser.phone
+        }
       }
       return token
     },
