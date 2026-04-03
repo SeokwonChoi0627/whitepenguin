@@ -3,6 +3,7 @@ import './globals.css'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import Providers from '@/components/Providers'
+import KakaoChannelButton from '@/components/KakaoChannelButton'
 
 export const metadata: Metadata = {
   title: '화이트펭귄 | 베이킹 전문 B2B 도매 플랫폼',
@@ -27,6 +28,7 @@ export default function RootLayout({
           <Header />
           <main className="flex-1">{children}</main>
           <Footer />
+          <KakaoChannelButton />
         </Providers>
       </body>
     </html>
