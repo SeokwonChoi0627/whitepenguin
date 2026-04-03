@@ -7,12 +7,12 @@ export default function KakaoChannelButton() {
       target="_blank"
       rel="noreferrer noopener"
       style={{ backgroundColor: '#FEE500' }}
-      className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-transform hover:scale-110 active:scale-95"
+      className="fixed bottom-6 right-6 z-50 w-20 rounded-2xl shadow-lg flex flex-col items-center justify-center gap-1 py-3 px-2 transition-transform hover:scale-110 active:scale-95"
       aria-label="카카오톡 채널 채팅 상담"
     >
       <svg
-        width="30"
-        height="28"
+        width="40"
+        height="37"
         viewBox="0 0 39 36"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -24,6 +24,9 @@ export default function KakaoChannelButton() {
           fill="#391B1B"
         />
       </svg>
+      <span className="text-xs font-bold text-gray-800 leading-tight text-center whitespace-nowrap">
+        채팅상담하기
+      </span>
     </a>
   )
 }
