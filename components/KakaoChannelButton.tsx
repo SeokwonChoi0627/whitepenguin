@@ -1,13 +1,11 @@
 'use client'
 
 export default function KakaoChannelButton() {
-  function handleClick() {
-    window.open('https://pf.kakao.com/_SxdCuX/chat', '_blank')
-  }
-
   return (
-    <button
-      onClick={handleClick}
+    <a
+      href="https://pf.kakao.com/_SxdCuX/chat"
+      target="_blank"
+      rel="noreferrer noopener"
       style={{ backgroundColor: '#FEE500' }}
       className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-transform hover:scale-110 active:scale-95"
       aria-label="카카오톡 채널 채팅 상담"
@@ -26,6 +24,6 @@ export default function KakaoChannelButton() {
           fill="#391B1B"
         />
       </svg>
-    </button>
+    </a>
   )
 }
