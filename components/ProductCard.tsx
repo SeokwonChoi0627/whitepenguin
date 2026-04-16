@@ -8,9 +8,10 @@ interface Props {
   product: Product
   onAddToQuote?: (product: Product) => void
   isAdded?: boolean
+  soldOut?: boolean
 }
 
-export default function ProductCard({ product, onAddToQuote, isAdded }: Props) {
+export default function ProductCard({ product, onAddToQuote, isAdded, soldOut }: Props) {
   return (
     <div className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 group">
       {/* 이미지 + 텍스트 영역 → 클릭 시 상세 페이지 이동 */}
@@ -29,6 +30,11 @@ export default function ProductCard({ product, onAddToQuote, isAdded }: Props) {
             />
           ) : (
             <span className="text-5xl opacity-20">🍞</span>
+          )}
+          {soldOut && (
+            <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+              <span className="text-white text-lg font-bold tracking-widest">품절</span>
+            </div>
           )}
         </div>
 
@@ -55,13 +61,16 @@ export default function ProductCard({ product, onAddToQuote, isAdded }: Props) {
           {product.priceVatIncluded.toLocaleString()}원
         </span>
         <button
-          onClick={() => onAddToQuote?.(product)}
+          onClick={() => !soldOut && onAddToQuote?.(product)}
+          disabled={soldOut}
           className={`flex items-center gap-1 text-white text-xs px-3 py-1.5 rounded-lg transition-colors ${
-            isAdded ? 'bg-green-500' : 'bg-[#C4A882] hover:bg-[#A08860]'
+            soldOut
+              ? 'bg-gray-400 cursor-not-allowed'
+              : isAdded ? 'bg-green-500' : 'bg-[#C4A882] hover:bg-[#A08860]'
           }`}
         >
           <ShoppingCart size={12} />
-          {isAdded ? '발주완료' : '발주'}
+          {soldOut ? '품절' : isAdded ? '발주완료' : '발주'}
         </button>
       </div>
     </div>

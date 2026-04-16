@@ -6,7 +6,9 @@ import { CATEGORY_MAP } from '@/lib/categories'
 import { getProductImages } from '@/app/actions/images'
 import { getProductDescription, saveProductDescription, uploadDescriptionImage } from '@/app/actions/descriptions'
 import { getProductThumbnails } from '@/app/actions/thumbnails'
+import { isSoldOut } from '@/app/actions/sold-out'
 import AdminImageManager from '@/components/AdminImageManager'
+import SoldOutToggle from '@/components/SoldOutToggle'
 import dynamic from 'next/dynamic'
 
 const RichTextEditor = dynamic(() => import('@/components/RichTextEditor'), { ssr: false })
@@ -16,10 +18,11 @@ export default async function AdminProductPage({ params }: { params: { id: strin
   if (!product) notFound()
 
   const category = CATEGORY_MAP[product.category]
-  const [images, descriptionHtml, thumbnailOverrides] = await Promise.all([
+  const [images, descriptionHtml, thumbnailOverrides, soldOut] = await Promise.all([
     getProductImages(params.id),
     getProductDescription(params.id),
     getProductThumbnails(),
+    isSoldOut(params.id),
   ])
 
   const customThumbnail = thumbnailOverrides[params.id] ?? null
@@ -40,6 +43,7 @@ export default async function AdminProductPage({ params }: { params: { id: strin
       </div>
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 space-y-6">
+        <SoldOutToggle productId={params.id} initialSoldOut={soldOut} />
         <AdminImageManager
           product={product}
           initialThumbnail={customThumbnail}

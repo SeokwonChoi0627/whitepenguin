@@ -12,9 +12,10 @@ import Link from 'next/link'
 
 interface Props {
   thumbnailOverrides: Record<string, string>
+  soldOutMap: Record<string, boolean>
 }
 
-function ProductsInner({ thumbnailOverrides }: Props) {
+function ProductsInner({ thumbnailOverrides, soldOutMap }: Props) {
   const searchParams = useSearchParams()
   const router = useRouter()
   const { data: session } = useSession()
@@ -146,7 +147,7 @@ function ProductsInner({ thumbnailOverrides }: Props) {
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-4">
               {filtered.map((product) => (
-                <ProductCard key={product.id} product={product} onAddToQuote={handleAddToQuote} isAdded={addedProduct === product.id} />
+                <ProductCard key={product.id} product={product} onAddToQuote={handleAddToQuote} isAdded={addedProduct === product.id} soldOut={!!soldOutMap[product.id]} />
               ))}
             </div>
           )}
@@ -156,10 +157,10 @@ function ProductsInner({ thumbnailOverrides }: Props) {
   )
 }
 
-export default function ProductsContent({ thumbnailOverrides }: Props) {
+export default function ProductsContent({ thumbnailOverrides, soldOutMap }: Props) {
   return (
     <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-gray-400">로딩 중...</div>}>
-      <ProductsInner thumbnailOverrides={thumbnailOverrides} />
+      <ProductsInner thumbnailOverrides={thumbnailOverrides} soldOutMap={soldOutMap} />
     </Suspense>
   )
 }

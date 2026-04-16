@@ -14,9 +14,10 @@ interface Props {
   category: Category | undefined
   images: string[]
   descriptionHtml: string
+  soldOut?: boolean
 }
 
-export default function ProductDetailClient({ product, category, images, descriptionHtml }: Props) {
+export default function ProductDetailClient({ product, category, images, descriptionHtml, soldOut }: Props) {
   const router = useRouter()
   const { data: session } = useSession()
   const [added, setAdded] = useState(false)
@@ -67,8 +68,13 @@ export default function ProductDetailClient({ product, category, images, descrip
         <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
           <div className="md:flex">
             {/* 이미지 캐러셀 */}
-            <div className="md:w-1/2">
+            <div className="md:w-1/2 relative">
               <ImageCarousel images={images} productName={product.name} />
+              {soldOut && (
+                <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-10">
+                  <span className="text-white text-3xl font-bold tracking-widest">품절</span>
+                </div>
+              )}
             </div>
 
             {/* 상품 정보 */}
@@ -140,17 +146,27 @@ export default function ProductDetailClient({ product, category, images, descrip
                   <span className="text-base text-gray-500">원 (VAT 포함)</span>
                 </div>
                 <div className="flex gap-3">
-                  <button
-                    onClick={handleAddToQuote}
-                    className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-semibold text-sm transition-all ${
-                      added
-                        ? 'bg-green-500 text-white'
-                        : 'bg-[#C4A882] hover:bg-[#A08860] text-white'
-                    }`}
-                  >
-                    <ShoppingCart size={18} />
-                    {added ? '발주서에 추가됨!' : '발주서에 추가'}
-                  </button>
+                  {soldOut ? (
+                    <button
+                      disabled
+                      className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-semibold text-sm bg-gray-400 text-white cursor-not-allowed"
+                    >
+                      <ShoppingCart size={18} />
+                      품절
+                    </button>
+                  ) : (
+                    <button
+                      onClick={handleAddToQuote}
+                      className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-semibold text-sm transition-all ${
+                        added
+                          ? 'bg-green-500 text-white'
+                          : 'bg-[#C4A882] hover:bg-[#A08860] text-white'
+                      }`}
+                    >
+                      <ShoppingCart size={18} />
+                      {added ? '발주서에 추가됨!' : '발주서에 추가'}
+                    </button>
+                  )}
                   <Link
                     href="/quote"
                     className="px-4 py-3 rounded-xl border border-[#C4A882] text-[#C4A882] text-sm font-semibold hover:bg-[#F7F3EE] transition-colors"

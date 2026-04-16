@@ -3,6 +3,7 @@ import { CATEGORY_MAP } from '@/lib/categories'
 import { getProductImages } from '@/app/actions/images'
 import { getProductDescription } from '@/app/actions/descriptions'
 import { getProductThumbnails } from '@/app/actions/thumbnails'
+import { isSoldOut } from '@/app/actions/sold-out'
 import { notFound } from 'next/navigation'
 import ProductDetailClient from '@/components/ProductDetailClient'
 
@@ -11,10 +12,11 @@ export default async function ProductDetailPage({ params }: { params: { id: stri
   if (!product) notFound()
 
   const category = CATEGORY_MAP[product.category]
-  const [extraImages, descriptionHtml, thumbnailOverrides] = await Promise.all([
+  const [extraImages, descriptionHtml, thumbnailOverrides, soldOut] = await Promise.all([
     getProductImages(params.id),
     getProductDescription(params.id),
     getProductThumbnails(),
+    isSoldOut(params.id),
   ])
 
   // 썸네일 오버라이드 적용
@@ -27,6 +29,7 @@ export default async function ProductDetailPage({ params }: { params: { id: stri
       category={category}
       images={allImages}
       descriptionHtml={descriptionHtml}
+      soldOut={soldOut}
     />
   )
 }

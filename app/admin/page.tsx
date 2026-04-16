@@ -3,9 +3,13 @@ import { ChevronRight, ImageIcon, LayoutGrid, MessageSquare } from 'lucide-react
 import { PRODUCTS } from '@/lib/products'
 import { CATEGORIES, CATEGORY_MAP } from '@/lib/categories'
 import { getAllProductImages } from '@/app/actions/images'
+import { getSoldOutProducts } from '@/app/actions/sold-out'
 
 export default async function AdminPage() {
-  const allImages = await getAllProductImages()
+  const [allImages, soldOutMap] = await Promise.all([
+    getAllProductImages(),
+    getSoldOutProducts(),
+  ])
 
   return (
     <div className="min-h-screen bg-[#F7F3EE]">
@@ -117,7 +121,12 @@ export default async function AdminPage() {
                 </div>
 
                 <div className="flex-1 min-w-0">
-                  <p className="font-medium text-[#333333] text-sm">{product.name}</p>
+                  <div className="flex items-center gap-2">
+                    <p className="font-medium text-[#333333] text-sm">{product.name}</p>
+                    {soldOutMap[product.id] && (
+                      <span className="text-[10px] font-bold text-red-600 bg-red-50 px-1.5 py-0.5 rounded">품절</span>
+                    )}
+                  </div>
                   <p className="text-xs text-gray-400 mt-0.5">
                     {category?.label} · {product.id}
                   </p>

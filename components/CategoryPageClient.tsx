@@ -12,9 +12,10 @@ interface Props {
   category: Category
   products: Product[]
   descriptionHtml: string
+  soldOutMap: Record<string, boolean>
 }
 
-export default function CategoryPageClient({ category, products, descriptionHtml }: Props) {
+export default function CategoryPageClient({ category, products, descriptionHtml, soldOutMap }: Props) {
   const router = useRouter()
   const { data: session } = useSession()
   const [addedProduct, setAddedProduct] = useState<string | null>(null)
@@ -93,7 +94,7 @@ export default function CategoryPageClient({ category, products, descriptionHtml
 
           <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-4">
             {products.map((product) => (
-              <ProductCard key={product.id} product={product} onAddToQuote={handleAddToQuote} />
+              <ProductCard key={product.id} product={product} onAddToQuote={handleAddToQuote} soldOut={!!soldOutMap[product.id]} />
             ))}
           </div>
         </section>
