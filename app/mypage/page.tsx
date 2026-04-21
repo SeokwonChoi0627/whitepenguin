@@ -9,7 +9,7 @@ const MENU = [
   { icon: <Package size={20} />, label: '발주 내역', href: '/mypage' },
   { icon: <FileText size={20} />, label: '발주서 작성', href: '/quote' },
   { icon: <MessageSquare size={20} />, label: '커뮤니티', href: '/community' },
-  { icon: <Settings size={20} />, label: '계정 설정', href: '#' },
+  { icon: <Settings size={20} />, label: '계정 설정', href: '/mypage/settings' },
 ]
 
 type Quote = {

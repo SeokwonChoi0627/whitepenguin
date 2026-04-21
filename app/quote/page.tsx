@@ -70,6 +70,35 @@ export default function QuotePage() {
     if (saved) setCart(JSON.parse(saved))
   }, [])
 
+  // 로그인 사용자: 계정 정보를 발주서 폼 기본값으로 로드
+  useEffect(() => {
+    if (status !== 'authenticated') return
+    let cancelled = false
+    ;(async () => {
+      try {
+        const res = await fetch('/api/user/profile')
+        if (!res.ok) return
+        const p = await res.json()
+        if (cancelled) return
+        setForm((prev) => ({
+          companyName: prev.companyName || (p.companyName ?? ''),
+          representative: prev.representative || (p.name ?? ''),
+          businessNumber: prev.businessNumber || (p.businessNumber ?? ''),
+          phone: prev.phone || (p.phone ?? ''),
+          email: prev.email || (p.email ?? ''),
+          address: prev.address || (p.address ?? ''),
+          addressDetail: prev.addressDetail || (p.addressDetail ?? ''),
+          notes: prev.notes,
+        }))
+      } catch {
+        // 프로필 로드 실패는 무시 (빈 폼으로 진행)
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [status])
+
   const updateCart = (updated: CartItem[]) => {
     setCart(updated)
     localStorage.setItem('quoteCart', JSON.stringify(updated))
@@ -107,6 +136,8 @@ export default function QuotePage() {
     formData.append('email', form.email)
     const fullAddress = form.addressDetail ? `${form.address} ${form.addressDetail}` : form.address
     formData.append('address', fullAddress)
+    formData.append('addressBase', form.address)
+    formData.append('addressDetail', form.addressDetail)
     formData.append('businessNumber', form.businessNumber)
     formData.append('notes', form.notes)
     formData.append('cart', JSON.stringify(cart))

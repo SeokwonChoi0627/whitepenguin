@@ -244,6 +244,8 @@ export async function POST(req: NextRequest) {
     const phone = formData.get('phone') as string
     const email = formData.get('email') as string
     const address = formData.get('address') as string
+    const addressBase = (formData.get('addressBase') as string) || address
+    const addressDetail = (formData.get('addressDetail') as string) || ''
     const businessNumber = formData.get('businessNumber') as string
     const notes = formData.get('notes') as string
     const cartJson = formData.get('cart') as string
@@ -399,6 +401,26 @@ export async function POST(req: NextRequest) {
       discount_rate: discountRate,
       final_total: finalTotal,
     })
+
+    // ── 로그인 사용자: 프로필에 발주서 정보 자동 저장 ─────────────
+    // 다음 주문 시 기본값으로 로드되도록 users 테이블을 업데이트 (덮어쓰기).
+    // 실패해도 발주 자체는 성공으로 처리 (프로필 저장은 부가 기능).
+    if (token?.id) {
+      const profileUpdate: Record<string, string | null> = {}
+      if (representative) profileUpdate.name = representative
+      if (companyName) profileUpdate.company_name = companyName
+      if (phone) profileUpdate.phone = phone
+      if (businessNumber) profileUpdate.business_number = businessNumber
+      if (addressBase) profileUpdate.address = addressBase
+      if (addressDetail) profileUpdate.address_detail = addressDetail
+      if (Object.keys(profileUpdate).length > 0) {
+        const { error: upErr } = await supabase
+          .from('users')
+          .update(profileUpdate)
+          .eq('id', token.id)
+        if (upErr) console.error('프로필 자동 저장 실패 (무시):', upErr)
+      }
+    }
 
     return NextResponse.json({ ok: true })
   } catch (err) {
