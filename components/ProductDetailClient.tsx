@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import Link from 'next/link'
-import { ChevronLeft, ShoppingCart, Package, Ruler, Hash, Tag } from 'lucide-react'
+import { ChevronLeft, ShoppingCart, Package, Ruler, Hash, Tag, Minus, Plus } from 'lucide-react'
 import { Product, Category } from '@/lib/types'
 import ImageCarousel from './ImageCarousel'
 import ProductDescription from './ProductDescription'
@@ -17,10 +17,26 @@ interface Props {
   soldOut?: boolean
 }
 
+const MAX_QTY = 999
+
 export default function ProductDetailClient({ product, category, images, descriptionHtml, soldOut }: Props) {
   const router = useRouter()
   const { data: session } = useSession()
   const [added, setAdded] = useState(false)
+  const [quantity, setQuantity] = useState(1)
+
+  const clampQty = (n: number) => Math.max(1, Math.min(MAX_QTY, Math.floor(n) || 1))
+
+  const handleQtyChange = (next: number) => setQuantity(clampQty(next))
+
+  const handleQtyInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value.replace(/[^0-9]/g, '')
+    if (raw === '') {
+      setQuantity(1)
+      return
+    }
+    setQuantity(clampQty(parseInt(raw, 10)))
+  }
 
   const handleAddToQuote = () => {
     if (!session) {
@@ -33,14 +49,16 @@ export default function ProductDetailClient({ product, category, images, descrip
       (item: { product: { id: string }; quantity: number }) => item.product.id === product.id
     )
     if (existing) {
-      existing.quantity += 1
+      existing.quantity = clampQty(existing.quantity + quantity)
     } else {
-      cart.push({ product, quantity: 1 })
+      cart.push({ product, quantity })
     }
     localStorage.setItem('quoteCart', JSON.stringify(cart))
     setAdded(true)
     setTimeout(() => setAdded(false), 2000)
   }
+
+  const subtotal = product.priceVatIncluded * quantity
 
   return (
     <div className="min-h-screen bg-[#F7F3EE]">
@@ -145,6 +163,52 @@ export default function ProductDetailClient({ product, category, images, descrip
                   </span>
                   <span className="text-base text-gray-500">원 (VAT 포함)</span>
                 </div>
+
+                {/* 수량 선택 */}
+                {!soldOut && (
+                  <div className="flex items-center justify-between mb-4 bg-[#F7F3EE]/70 rounded-xl px-4 py-3">
+                    <span className="text-sm font-semibold text-[#333333]">수량</span>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => handleQtyChange(quantity - 1)}
+                        disabled={quantity <= 1}
+                        aria-label="수량 감소"
+                        className="w-9 h-9 rounded-lg border border-gray-200 bg-white flex items-center justify-center text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                      >
+                        <Minus size={16} />
+                      </button>
+                      <input
+                        type="text"
+                        inputMode="numeric"
+                        value={quantity}
+                        onChange={handleQtyInput}
+                        aria-label="수량"
+                        className="w-14 h-9 rounded-lg border border-gray-200 bg-white text-center text-sm font-semibold text-[#333333] focus:outline-none focus:ring-2 focus:ring-[#C4A882]/40 focus:border-[#C4A882]"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleQtyChange(quantity + 1)}
+                        disabled={quantity >= MAX_QTY}
+                        aria-label="수량 증가"
+                        className="w-9 h-9 rounded-lg border border-gray-200 bg-white flex items-center justify-center text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                      >
+                        <Plus size={16} />
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* 소계 */}
+                {!soldOut && quantity > 1 && (
+                  <div className="flex items-baseline justify-between mb-4 px-1">
+                    <span className="text-xs text-gray-500">소계 ({quantity}개)</span>
+                    <span className="text-lg font-bold text-[#333333]">
+                      {subtotal.toLocaleString()}<span className="text-sm text-gray-500 font-medium">원</span>
+                    </span>
+                  </div>
+                )}
+
                 <div className="flex gap-3">
                   {soldOut ? (
                     <button
@@ -164,7 +228,7 @@ export default function ProductDetailClient({ product, category, images, descrip
                       }`}
                     >
                       <ShoppingCart size={18} />
-                      {added ? '발주서에 추가됨!' : '발주서에 추가'}
+                      {added ? '발주서에 추가됨!' : `발주서에 ${quantity}개 추가`}
                     </button>
                   )}
                   <Link
