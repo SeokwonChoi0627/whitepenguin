@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
 import { CartItem } from '@/lib/types'
 import { Trash2, Plus, Minus, FileText, CheckCircle, Upload, X, Search, AlertCircle, Mail } from 'lucide-react'
 import Link from 'next/link'
@@ -29,8 +28,7 @@ const EMPTY_FORM = {
 }
 
 export default function QuotePage() {
-  const { data: session, status } = useSession()
-  const router = useRouter()
+  const { status } = useSession()
   const [cart, setCart] = useState<CartItem[]>([])
   const [form, setForm] = useState(EMPTY_FORM)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -60,10 +58,6 @@ export default function QuotePage() {
       document.head.appendChild(script)
     }
   }
-
-  useEffect(() => {
-    if (status === 'unauthenticated') router.push('/auth')
-  }, [status, router])
 
   useEffect(() => {
     const saved = localStorage.getItem('quoteCart')
@@ -167,10 +161,6 @@ export default function QuotePage() {
       ? Math.floor((totalAmount - discountAmount) / 1000) * 1000
       : totalAmount - discountAmount)
     : totalAmount
-
-  if (status === 'loading' || !session) {
-    return <div className="min-h-screen flex items-center justify-center text-gray-400">로딩 중...</div>
-  }
 
   return (
     <>
