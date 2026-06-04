@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ChevronLeft, ShoppingCart, Package, Ruler, Hash, Tag, Minus, Plus } from 'lucide-react'
 import { Product, Category } from '@/lib/types'
@@ -18,6 +19,7 @@ interface Props {
 const MAX_QTY = 999
 
 export default function ProductDetailClient({ product, category, images, descriptionHtml, soldOut }: Props) {
+  const router = useRouter()
   const [added, setAdded] = useState(false)
   const [quantity, setQuantity] = useState(1)
 
