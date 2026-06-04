@@ -1,8 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { useSession } from 'next-auth/react'
 import { Category, Product } from '@/lib/types'
 import ProductCard from '@/components/ProductCard'
 import { useState } from 'react'
@@ -16,15 +14,9 @@ interface Props {
 }
 
 export default function CategoryPageClient({ category, products, descriptionHtml, soldOutMap }: Props) {
-  const router = useRouter()
-  const { data: session } = useSession()
   const [addedProduct, setAddedProduct] = useState<string | null>(null)
 
   const handleAddToQuote = (product: Product) => {
-    if (!session) {
-      router.push('/auth')
-      return
-    }
     const existing = JSON.parse(localStorage.getItem('quoteCart') || '[]')
     const idx = existing.findIndex((i: { product: Product }) => i.product.id === product.id)
     if (idx >= 0) existing[idx].quantity += 1
