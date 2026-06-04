@@ -1,8 +1,7 @@
 'use client'
 
 import { useState, useMemo, Suspense } from 'react'
-import { useSearchParams, useRouter } from 'next/navigation'
-import { useSession } from 'next-auth/react'
+import { useSearchParams } from 'next/navigation'
 import { PRODUCTS } from '@/lib/products'
 import { CATEGORIES, CATEGORY_MAP } from '@/lib/categories'
 import { Product } from '@/lib/types'
@@ -17,8 +16,6 @@ interface Props {
 
 function ProductsInner({ thumbnailOverrides, soldOutMap }: Props) {
   const searchParams = useSearchParams()
-  const router = useRouter()
-  const { data: session } = useSession()
   const initialCategory = searchParams.get('category') || 'all'
 
   const [selectedCategory, setSelectedCategory] = useState(initialCategory)
@@ -47,10 +44,6 @@ function ProductsInner({ thumbnailOverrides, soldOutMap }: Props) {
   }, [products, selectedCategory, searchQuery, categoryOrder])
 
   const handleAddToQuote = (product: Product) => {
-    if (!session) {
-      router.push('/auth')
-      return
-    }
     const existing = JSON.parse(localStorage.getItem('quoteCart') || '[]')
     const idx = existing.findIndex((i: { product: Product }) => i.product.id === product.id)
     if (idx >= 0) existing[idx].quantity += 1
