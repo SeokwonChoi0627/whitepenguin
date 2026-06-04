@@ -284,22 +284,9 @@ export default function AuthPage() {
             </div>
           )}
 
-          {/* 비회원 주문 + 소셜 로그인 (forgot 모드에서 숨김) */}
+          {/* 소셜 로그인 + 비회원 주문 (forgot 모드에서 숨김) */}
           {mode !== 'forgot' && (
             <>
-              <div className="flex items-center gap-3 mt-5">
-                <div className="flex-1 h-px bg-gray-200" />
-                <span className="text-xs text-gray-400">또는</span>
-                <div className="flex-1 h-px bg-gray-200" />
-              </div>
-
-              <Link
-                href="/quote"
-                className="mt-3 w-full flex items-center justify-center gap-2 border border-gray-300 text-gray-600 font-semibold py-3 rounded-xl hover:bg-gray-50 transition-colors text-sm"
-              >
-                비회원으로 주문하기
-              </Link>
-
               <div className="flex items-center gap-3 mt-5">
                 <div className="flex-1 h-px bg-gray-200" />
                 <span className="text-xs text-gray-400">소셜 로그인</span>
@@ -327,6 +314,19 @@ export default function AuthPage() {
                 </svg>
                 카카오로 {mode === 'login' ? '로그인' : '시작하기'}
               </button>
+
+              <div className="flex items-center gap-3 mt-5">
+                <div className="flex-1 h-px bg-gray-200" />
+                <span className="text-xs text-gray-400">비회원</span>
+                <div className="flex-1 h-px bg-gray-200" />
+              </div>
+
+              <Link
+                href="/quote"
+                className="mt-3 w-full flex items-center justify-center gap-2 border border-gray-300 text-gray-500 font-medium py-3 rounded-xl hover:bg-gray-50 transition-colors text-sm"
+              >
+                비회원으로 주문하기
+              </Link>
             </>
           )}
         </div>
