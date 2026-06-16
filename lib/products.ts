@@ -37,11 +37,11 @@ export const PRODUCTS: Product[] = [
     image: '/thumbnails/컵머핀틀6구.png' },
   { id: 'WP48429', name: '잉글리시머핀틀', category: 'baking-mold', size: '34×23.9cm', holes: '6구(뚜껑)', holeSize: '지름9.1×3cm', code: '03266', priceVatIncluded: 14450,
     image: '/thumbnails/원형잉글리시머핀틀.png' },
-  { id: 'WP48430', name: '고양이발바닥틀', category: 'baking-mold', size: '26.5×18cm', holes: '12구', holeSize: '4×4×1.44cm', code: '03267', priceVatIncluded: 11950,
+  { id: 'WP48430', name: '고양이발바닥틀', category: 'baking-mold', size: '26.5×18cm', holes: '12구', holeSize: '4×4×1.44cm', code: '03267', priceVatIncluded: 12950,
     image: '/thumbnails/고양이발바닥틀12구.png' },
-  { id: 'WP48431', name: '하트마들렌틀', category: 'baking-mold', size: '26×20cm', holes: '6구', holeSize: '7.3×7×2.3cm', code: '03268', priceVatIncluded: 11950,
+  { id: 'WP48431', name: '하트마들렌틀', category: 'baking-mold', size: '26×20cm', holes: '6구', holeSize: '7.3×7×2.3cm', code: '03268', priceVatIncluded: 12950,
     image: '/thumbnails/하트마들렌틀.png' },
-  { id: 'WP48432', name: '하트티그레틀', category: 'baking-mold', size: '26×18.5cm', holes: '6구', holeSize: '6×5.5×3cm', code: '03269', priceVatIncluded: 12950,
+  { id: 'WP48432', name: '하트티그레틀', category: 'baking-mold', size: '26×18.5cm', holes: '6구', holeSize: '6×5.5×3cm', code: '03269', priceVatIncluded: 13950,
     image: '/thumbnails/하트티그레틀.png' },
   { id: 'WP48474', name: '큰까눌레틀', category: 'baking-mold', size: '26×18cm', holes: '6구', holeSize: '가로/세로6.7×5.5cm', code: '03270', priceVatIncluded: 11950,
     image: '/thumbnails/까눌레틀6구.png' },
@@ -97,8 +97,10 @@ export const PRODUCTS: Product[] = [
     image: '/thumbnails/초미니타르트틀_2.png' },
   { id: 'WP48473', name: '레몬틀', category: 'baking-mold', size: '26.5×19.5cm', holes: '6구', holeSize: '6.1×3cm', code: '03263', priceVatIncluded: 9950,
     image: '/thumbnails/레몬틀.png' },
-  { id: 'WP48417', name: '미니조각케잌틀', category: 'baking-mold', size: '26×17.5cm', holes: '10구', code: '(문의)', priceVatIncluded: 15950,
+  { id: 'WP48417', name: '미니조각케잌틀', category: 'baking-mold', size: '26×17.5cm', holes: '10구', code: '07002', priceVatIncluded: 13950,
     imageColor: '#FFB7C5' },
+  { id: 'WP07013', name: '밤 모양틀 6구', category: 'baking-mold', size: '30×20cm', holes: '6구', code: '07013', priceVatIncluded: 12950,
+    imageColor: '#EFEBE9' },
 
   // ── 쿠키틀 ──────────────────────────────────────────
   { id: 'WP30001', name: '쿠키틀 동물모양', category: 'cookie-cutter', holes: '4P', code: '04511', priceVatIncluded: 11950,
@@ -119,7 +121,7 @@ export const PRODUCTS: Product[] = [
     image: '/thumbnails/동물인형쿠키틀.png' },
   { id: 'WP30009', name: '쿠키틀 스누피', category: 'cookie-cutter', holes: '3P', code: '06128', priceVatIncluded: 11950,
     image: '/thumbnails/스누피쿠키틀.png' },
-  { id: 'WP30010', name: '쿠키틀 컵케잌고양이', category: 'cookie-cutter', holes: '2P', code: '(문의)', priceVatIncluded: 9980,
+  { id: 'WP30010', name: '쿠키틀 컵케잌고양이', category: 'cookie-cutter', holes: '2P', code: '06129', priceVatIncluded: 9950,
     image: '/thumbnails/컵케잌고양이쿠키틀.png' },
 
   // ── 푸딩틀 ──────────────────────────────────────────
@@ -131,7 +133,7 @@ export const PRODUCTS: Product[] = [
     imageColor: '#FFF9C4' },
   { id: 'WP03599', name: '카피바라 푸딩틀 1', category: 'pudding-mold', size: '8.5×7cm', code: '06257', priceVatIncluded: 13950,
     image: '/thumbnails/카피바라푸딩틀1.png' },
-  { id: 'WP03600', name: '카피바라 푸딩틀 2', category: 'pudding-mold', size: '7.2×4.7cm', code: '(문의)', priceVatIncluded: 12950,
+  { id: 'WP03600', name: '카피바라 푸딩틀 2', category: 'pudding-mold', size: '7.2×4.7cm', code: '06258', priceVatIncluded: 11950,
     image: '/thumbnails/카피바라푸딩틀2.png' },
 
   // ── 커버천 ──────────────────────────────────────────
@@ -142,7 +144,7 @@ export const PRODUCTS: Product[] = [
   { id: 'CV06427', name: '커버천 원형 M1', category: 'cover-cloth', size: '18×9cm', code: '06427', priceVatIncluded: 2500, image: '/thumbnails/반느통커버천.png' },
   { id: 'CV06437', name: '커버천 원형 M2', category: 'cover-cloth', size: '20×8cm', code: '06437', priceVatIncluded: 2500, image: '/thumbnails/반느통커버천.png' },
   { id: 'CV06438', name: '커버천 원형 M3', category: 'cover-cloth', size: '22×8cm', code: '06438', priceVatIncluded: 2500, image: '/thumbnails/반느통커버천.png' },
-  { id: 'CV00010', name: '커버천 원형 L1', category: 'cover-cloth', size: '23×8.5cm', code: '(문의)', priceVatIncluded: 3000, image: '/thumbnails/반느통커버천.png' },
+  { id: 'CV00010', name: '커버천 원형 L1', category: 'cover-cloth', size: '23×8.5cm', code: '06439', priceVatIncluded: 2000, image: '/thumbnails/반느통커버천.png' },
 
   // ── 도구 ──────────────────────────────────────────
   { id: 'WP48482', name: '스크레퍼', category: 'tools', code: '03287', note: '안전봉투 발송', priceVatIncluded: 4450,
@@ -151,6 +153,8 @@ export const PRODUCTS: Product[] = [
     image: '/thumbnails/쿠프나이프(일반).png' },
   { id: 'WP49198', name: '쿠프나이프 (고급)', category: 'tools', code: '03289', note: '안전봉투 발송', priceVatIncluded: 6950,
     image: '/thumbnails/쿠프나이프.png' },
+  { id: 'WP49200', name: '브레드 나이프', category: 'tools', size: '40.5×7cm', code: '07020', note: '안전봉투 발송', priceVatIncluded: 15000,
+    imageColor: '#ECEFF1' },
   { id: 'WP48443', name: '반자동체 (화이트)', category: 'tools', code: '03290', priceVatIncluded: 9450,
     image: '/thumbnails/반자동체_화이트.png' },
   { id: 'WP48444', name: '반자동체 (살구)', category: 'tools', code: '03291', priceVatIncluded: 9450,
@@ -175,7 +179,7 @@ export const PRODUCTS: Product[] = [
     image: '/thumbnails/원형고리미니솔.png' },
   { id: 'WP00001', name: '주방저울 (백색)', category: 'tools', code: '06461', priceVatIncluded: 29800,
     image: '/thumbnails/전자주방저울.png' },
-  { id: 'WP00002', name: '주방저울 (흑색)', category: 'tools', code: '(문의)', priceVatIncluded: 29800,
+  { id: 'WP00002', name: '주방저울 (흑색)', category: 'tools', code: '06462', priceVatIncluded: 24950,
     image: '/thumbnails/전자주방저울.png' },
 
   // ── 소모품 ──────────────────────────────────────────
