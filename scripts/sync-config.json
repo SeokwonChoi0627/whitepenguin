@@ -1,0 +1,37 @@
+{
+  "_설명": "엑셀(상품총괄표) → 홈페이지 상품목록 동기화 설정. 마스터 경로/카테고리 매핑/제외 규칙.",
+  "masterDir": "C:/AI/inventory_dashboard/data/master",
+  "masterFilePrefix": "상품총괄표",
+  "sheetName": "상품 총괄표",
+  "headerRowIndex": 1,
+  "columns": {
+    "name": "상품명",
+    "size": "사이즈",
+    "category": "카테고리",
+    "barcode": "바코드 번호",
+    "sku": "관리번호\n(상품코드)",
+    "price": "판매가\n(VAT포함)"
+  },
+  "categoryMap": {
+    "제과틀": "baking-mold",
+    "반느통": "banneton",
+    "커버천": "cover-cloth",
+    "쿠키틀": "cookie-cutter",
+    "푸딩틀": "pudding-mold",
+    "도구": "tools",
+    "소모품": "consumables"
+  },
+  "categoryOrder": ["banneton", "baking-mold", "cookie-cutter", "pudding-mold", "cover-cloth", "tools", "consumables"],
+  "categoryLabel": {
+    "banneton": "반느통",
+    "baking-mold": "제과틀",
+    "cookie-cutter": "쿠키틀",
+    "pudding-mold": "푸딩틀",
+    "cover-cloth": "커버천",
+    "tools": "도구",
+    "consumables": "소모품"
+  },
+  "excludeCodes": [],
+  "excludeCategories": ["기타"],
+  "minPrice": 1
+}
