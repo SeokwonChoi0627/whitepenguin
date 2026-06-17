@@ -4,11 +4,13 @@ import { PRODUCTS } from '@/lib/products'
 import { CATEGORIES, CATEGORY_MAP } from '@/lib/categories'
 import { getAllProductImages } from '@/app/actions/images'
 import { getSoldOutProducts } from '@/app/actions/sold-out'
+import { getProductThumbnails } from '@/app/actions/thumbnails'
 
 export default async function AdminPage() {
-  const [allImages, soldOutMap] = await Promise.all([
+  const [allImages, soldOutMap, thumbnailOverrides] = await Promise.all([
     getAllProductImages(),
     getSoldOutProducts(),
+    getProductThumbnails(),
   ])
 
   return (
@@ -94,6 +96,8 @@ export default async function AdminPage() {
           {PRODUCTS.map((product) => {
             const category = CATEGORY_MAP[product.category]
             const count = (allImages[product.id] || []).length
+            // 수기 업로드 커스텀 썸네일 우선 (판매 페이지와 동일 병합 규칙)
+            const thumbnail = thumbnailOverrides[product.id] ?? product.image
 
             return (
               <Link
@@ -105,13 +109,13 @@ export default async function AdminPage() {
                 <div
                   className="w-11 h-11 rounded-lg flex-shrink-0 overflow-hidden flex items-center justify-center"
                   style={{
-                    backgroundColor: product.image ? '#f8f5f0' : (product.imageColor || '#F7F3EE'),
+                    backgroundColor: thumbnail ? '#f8f5f0' : (product.imageColor || '#F7F3EE'),
                   }}
                 >
-                  {product.image ? (
+                  {thumbnail ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
-                      src={product.image}
+                      src={thumbnail}
                       alt={product.name}
                       className="w-full h-full object-cover"
                     />
