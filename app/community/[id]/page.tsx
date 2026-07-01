@@ -69,15 +69,10 @@ export default function CommunityDetailPage() {
       <article className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
         {/* 이미지 */}
         {post.images && post.images.length > 0 ? (
-          <div className={`grid gap-1 ${post.images.length === 1 ? 'grid-cols-1' : post.images.length === 2 ? 'grid-cols-2' : 'grid-cols-2'}`}>
+          <div className="flex flex-col gap-1 bg-gray-100">
             {post.images.map((src, idx) => (
               // eslint-disable-next-line @next/next/no-img-element
-              <img key={idx} src={src} alt=""
-                className={`w-full object-cover ${
-                  post.images.length === 1 ? 'h-72' :
-                  post.images.length === 2 ? 'h-52' :
-                  idx === 0 && post.images.length === 3 ? 'h-52 col-span-2' : 'h-52'
-                }`} />
+              <img key={idx} src={src} alt="" className="w-full h-auto block" />
             ))}
           </div>
         ) : (

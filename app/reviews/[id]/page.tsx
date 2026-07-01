@@ -71,14 +71,10 @@ export default function ReviewDetailPage() {
       <article className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
         {/* 사진 */}
         {review.images && review.images.length > 0 && (
-          <div className={`grid gap-0.5 ${
-            review.images.length === 1 ? 'grid-cols-1' :
-            review.images.length === 2 ? 'grid-cols-2' : 'grid-cols-3'
-          }`}>
+          <div className="flex flex-col gap-1 bg-gray-100">
             {review.images.map((src, idx) => (
               // eslint-disable-next-line @next/next/no-img-element
-              <img key={idx} src={src} alt=""
-                className={`w-full object-cover ${review.images.length === 1 ? 'h-80' : 'h-52'}`} />
+              <img key={idx} src={src} alt="" className="w-full h-auto block" />
             ))}
           </div>
         )}
