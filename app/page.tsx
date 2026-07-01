@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { CATEGORIES } from '@/lib/categories'
 import { ArrowRight, CheckCircle, Package, FileText, Phone, Heart, ThumbsUp, Star } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
+import PopupBanner from '@/components/PopupBanner'
 
 const STEPS = [
   { icon: <Package size={24} />, step: '01', title: '회원가입', desc: '네이버·카카오로 간편 가입' },
@@ -43,6 +44,9 @@ export default async function HomePage() {
 
   return (
     <div>
+      {/* 홈 진입 시 이벤트 팝업 (하루 한 번) */}
+      <PopupBanner />
+
       {/* ── 히어로 ─────────────────────────────────── */}
       <section className="bg-[#333333] text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28">
