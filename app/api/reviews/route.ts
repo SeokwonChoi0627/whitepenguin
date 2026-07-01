@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/app/api/auth/[...nextauth]/options'
 import { supabase } from '@/lib/supabase'
@@ -38,5 +39,8 @@ export async function POST(req: NextRequest) {
   }).select().single()
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+  // 새 리뷰가 목록에 즉시 반영되도록 캐시 무효화
+  revalidatePath('/reviews')
   return NextResponse.json(data)
 }

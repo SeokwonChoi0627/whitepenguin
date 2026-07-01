@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { Star, ChevronLeft, ImagePlus, X } from 'lucide-react'
 import Link from 'next/link'
 import { supabaseBrowser } from '@/lib/supabase-browser'
+import { compressImage } from '@/lib/imageCompress'
 
 const CATEGORIES = ['제과틀', '반느통', '커버천', '쿠키틀', '푸딩틀', '도구', '소모품']
 
@@ -49,7 +50,8 @@ export default function ReviewWritePage() {
 
     // 이미지 업로드
     const imageUrls: string[] = []
-    for (const file of images) {
+    for (const original of images) {
+      const file = await compressImage(original) // 업로드 전 자동 압축/리사이즈
       const ext = file.name.split('.').pop()
       const fileName = `review_${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`
       const { error: uploadError } = await supabaseBrowser.storage
