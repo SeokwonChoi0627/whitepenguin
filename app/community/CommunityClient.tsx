@@ -5,7 +5,7 @@ import { useSession } from 'next-auth/react'
 import Link from 'next/link'
 import { PenLine, Heart, MessageCircle, Search } from 'lucide-react'
 
-const CATEGORIES = ['전체', '레시피', '결과물', '팁', '문의']
+const CATEGORIES = ['전체', '이벤트/소식', '레시피', '결과물', '팁', '문의']
 
 export interface Post {
   id: string
@@ -34,6 +34,7 @@ export default function CommunityClient({ initialPosts }: { initialPosts: Post[]
   })
 
   const categoryColor: Record<string, string> = {
+    '이벤트/소식': 'bg-green-50 text-green-700',
     '레시피': 'bg-orange-50 text-orange-600',
     '결과물': 'bg-purple-50 text-purple-600',
     '팁': 'bg-blue-50 text-blue-600',
