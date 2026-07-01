@@ -48,8 +48,20 @@ export default async function HomePage() {
       <PopupBanner />
 
       {/* ── 히어로 ─────────────────────────────────── */}
-      <section className="bg-[#333333] text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28">
+      <section className="relative overflow-hidden bg-[#333333] text-white">
+        {/* 배경 이미지 (우측 상단) */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-y-0 right-0 w-full opacity-20 md:w-3/5 md:opacity-100 lg:w-[55%]"
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/hero-bg.png" alt="" className="h-full w-full object-cover object-center" />
+          {/* 좌측·하단 그라데이션으로 텍스트 영역과 자연스럽게 블렌드 */}
+          <div className="absolute inset-0 bg-gradient-to-r from-[#333333] via-[#333333]/70 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#333333]/60 to-transparent" />
+        </div>
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28">
           <div className="max-w-2xl">
             <div className="flex flex-wrap gap-2 mb-6">
               <div className="inline-flex items-center gap-2 bg-white/10 text-white/70 text-sm px-3 py-1 rounded-full">
