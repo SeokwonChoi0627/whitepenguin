@@ -1,16 +1,18 @@
 import Link from 'next/link'
-import { ChevronRight, ImageIcon, LayoutGrid, MessageSquare } from 'lucide-react'
+import { ChevronRight, ImageIcon, LayoutGrid, MessageSquare, Users } from 'lucide-react'
 import { PRODUCTS } from '@/lib/products'
 import { CATEGORIES, CATEGORY_MAP } from '@/lib/categories'
 import { getAllProductImages } from '@/app/actions/images'
 import { getSoldOutProducts } from '@/app/actions/sold-out'
 import { getProductThumbnails } from '@/app/actions/thumbnails'
+import { getVisitStats } from '@/app/actions/visit-stats'
 
 export default async function AdminPage() {
-  const [allImages, soldOutMap, thumbnailOverrides] = await Promise.all([
+  const [allImages, soldOutMap, thumbnailOverrides, visitStats] = await Promise.all([
     getAllProductImages(),
     getSoldOutProducts(),
     getProductThumbnails(),
+    getVisitStats(),
   ])
 
   return (
@@ -25,6 +27,30 @@ export default async function AdminPage() {
       </div>
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 space-y-6">
+        {/* ── 방문자 통계 ── */}
+        <div>
+          <div className="flex items-center gap-2 mb-3">
+            <Users size={16} className="text-[#C4A882]" />
+            <h2 className="font-semibold text-[#333333]">방문자 통계</h2>
+          </div>
+          <div className="bg-white rounded-2xl shadow-sm grid grid-cols-2 divide-x divide-gray-100">
+            <div className="px-5 py-4 text-center">
+              <p className="text-xs text-gray-400">오늘 순방문자</p>
+              <p className="text-2xl font-bold text-[#333333] mt-1">
+                {visitStats.today.toLocaleString()}
+                <span className="text-sm font-medium text-gray-400 ml-1">명</span>
+              </p>
+            </div>
+            <div className="px-5 py-4 text-center">
+              <p className="text-xs text-gray-400">누적 순방문자</p>
+              <p className="text-2xl font-bold text-[#333333] mt-1">
+                {visitStats.total.toLocaleString()}
+                <span className="text-sm font-medium text-gray-400 ml-1">명</span>
+              </p>
+            </div>
+          </div>
+        </div>
+
         {/* ── 게시글·리뷰 관리 ── */}
         <div>
           <div className="flex items-center gap-2 mb-3">
