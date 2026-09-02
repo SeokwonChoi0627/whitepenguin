@@ -15,13 +15,10 @@ export function isAdminEmail(email?: string | null): boolean {
 /**
  * 알림 메일 수신 주소 목록.
  *
- * 대표 관리자 주소는 항상 포함한다. ADMIN_EMAIL 환경변수만 믿으면
- * 그 값이 비었거나 오타이거나 다른 주소일 때 알림이 조용히 사라진다
- * (실제로 반품 알림이 도착하지 않는 문제가 있었다).
- * 발주서 메일이 대표 주소로 하드코딩돼 있는 것과도 동작을 맞춘다.
+ * 대표 관리자 주소로만 보낸다 — 발주서 메일(send-quote)과 동일한 수신처.
+ * ADMIN_EMAIL 환경변수는 /admin 접근 판별(isAdminEmail)에만 쓰고
+ * 알림 수신에는 쓰지 않는다. 운영자가 그 주소로는 받지 않기를 원했다.
  */
 export function adminNotifyAddresses(): string[] {
-  const envAddress = process.env.ADMIN_EMAIL?.trim()
-  const addresses = [ADMIN_EMAILS[0], ...(envAddress ? [envAddress] : [])]
-  return Array.from(new Set(addresses.map((a) => a.toLowerCase())))
+  return [ADMIN_EMAILS[0]]
 }
