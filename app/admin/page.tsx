@@ -76,6 +76,15 @@ export default async function AdminPage() {
               </div>
               <ChevronRight size={15} className="text-gray-300 flex-shrink-0" />
             </Link>
+            <Link href="/admin/popup"
+              className="flex items-center gap-4 px-5 py-3.5 hover:bg-[#F7F3EE] transition-colors">
+              <span className="text-xl w-7 text-center flex-shrink-0">📢</span>
+              <div className="flex-1 min-w-0">
+                <p className="font-medium text-[#333333] text-sm">팝업 배너</p>
+                <p className="text-xs text-gray-400 mt-0.5">메인 팝업 이미지·링크·노출 기간 설정</p>
+              </div>
+              <ChevronRight size={15} className="text-gray-300 flex-shrink-0" />
+            </Link>
           </div>
         </div>
 
