@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/app/api/auth/[...nextauth]/options'
 import { supabase } from '@/lib/supabase'
 import { getSupabaseAdmin } from '@/lib/supabase-admin'
-import { isAdminEmail, adminNotifyAddress } from '@/lib/admin'
+import { isAdminEmail, adminNotifyAddresses } from '@/lib/admin'
 import { getTransporter, mailFrom } from '@/lib/mailer'
 import {
   buildAdminReturnEmail,
@@ -329,27 +329,44 @@ async function insertWithUniqueReturnNumber(
 
 /** 관리자 알림 + 고객 확인 메일 발송. 관리자 메일 성공 여부를 반환한다. */
 async function sendReturnMails(mailData: ReturnMailData): Promise<boolean> {
+  const recipients = adminNotifyAddresses()
   let adminMailSent = false
+
   try {
     const transporter = getTransporter()
-    await transporter.sendMail({
+    const info = await transporter.sendMail({
       from: mailFrom('화이트펭귄 반품접수'),
-      to: adminNotifyAddress(),
+      to: recipients.join(', '),
       subject: `[화이트펭귄] 반품요청 접수 — ${mailData.companyName || mailData.representative} (${mailData.returnNumber})`,
       html: buildAdminReturnEmail(mailData),
     })
-    adminMailSent = true
+    // 수신 거부된 주소가 있으면 로그에 남긴다 — 조용히 사라지는 것을 막는다
+    if (info.rejected?.length) {
+      console.error('반품 알림 메일 거부된 수신자:', info.rejected)
+    }
+    adminMailSent = (info.accepted?.length ?? 0) > 0
+    console.log(
+      `반품 알림 메일 발송 (${mailData.returnNumber}) → 수락 ${info.accepted?.length ?? 0}건 / ` +
+      `거부 ${info.rejected?.length ?? 0}건`
+    )
+  } catch (err) {
+    console.error(`반품 알림 메일 발송 실패 (${mailData.returnNumber}) → ${recipients.join(', ')}:`, err)
+    return false
+  }
 
-    if (mailData.email) {
-      await transporter.sendMail({
+  // 고객 확인 메일은 부가 기능이라, 실패해도 관리자 알림 성공 여부를 뒤집지 않는다
+  if (mailData.email) {
+    try {
+      await getTransporter().sendMail({
         from: mailFrom(),
         to: mailData.email,
         subject: `[화이트펭귄] 반품요청 접수 확인 — ${mailData.returnNumber}`,
         html: buildCustomerReturnEmail(mailData),
       })
+    } catch (err) {
+      console.error('고객 확인 메일 발송 실패 (접수는 유효):', err)
     }
-  } catch (err) {
-    console.error('반품요청 메일 발송 오류:', err)
   }
+
   return adminMailSent
 }
