@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { ChevronLeft, Plus, Ticket, Power, Trash2, Copy } from 'lucide-react'
+import { endOfDayIso } from '@/lib/kst'
 import {
   describeDiscount,
   formatCouponPeriod,
@@ -85,7 +86,10 @@ export default function AdminCouponsPage() {
               ? Number(form.max_discount_amount)
               : null,
           starts_at: null,
-          expires_at: form.expires_at ? new Date(form.expires_at).toISOString() : null,
+          // 종료일 당일 23:59:59(KST)까지 유효하게 저장한다.
+          // new Date('2026-12-31').toISOString() 은 UTC 자정 = 한국 12/31 오전 9시라,
+          // 그 날 오전에 이미 만료돼 버린다.
+          expires_at: form.expires_at ? endOfDayIso(form.expires_at) : null,
           max_redemptions: form.max_redemptions ? Number(form.max_redemptions) : null,
           auto_apply_to_members: form.auto_apply_to_members,
           is_active: true,
