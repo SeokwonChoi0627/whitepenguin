@@ -2,15 +2,19 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/app/api/auth/[...nextauth]/options'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { Package, FileText, MessageSquare, RotateCcw, Settings, ChevronRight } from 'lucide-react'
+import { Package, FileText, MessageSquare, RotateCcw, Settings, Ticket, ChevronRight } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { listUserReturnRequests } from '@/lib/return-requests'
+import { listMemberCoupons } from '@/lib/coupon-store'
+import type { AvailableCoupon } from '@/lib/coupons'
+import MyCoupons from './MyCoupons'
 import OrderHistory, { type OrderSummary } from './OrderHistory'
 import ReturnHistory, { type ReturnSummary } from './ReturnHistory'
 
 const MENU = [
   { icon: <Package size={20} />, label: '발주 내역', href: '/mypage' },
   { icon: <FileText size={20} />, label: '발주서 작성', href: '/quote' },
+  { icon: <Ticket size={20} />, label: '내 쿠폰', href: '/mypage#coupons' },
   { icon: <RotateCcw size={20} />, label: '반품 신청 내역', href: '/mypage#returns' },
   { icon: <MessageSquare size={20} />, label: '커뮤니티', href: '/community' },
   { icon: <Settings size={20} />, label: '계정 설정', href: '/mypage/settings' },
@@ -29,6 +33,16 @@ async function loadReturnsSafely(userId: string): Promise<ReturnSummary[]> {
   }
 }
 
+/** 쿠폰 테이블 마이그레이션 전이거나 조회에 실패해도 나머지 화면은 정상 표시한다 */
+async function loadCouponsSafely(userId: string): Promise<AvailableCoupon[]> {
+  try {
+    return await listMemberCoupons(userId)
+  } catch (err) {
+    console.error('쿠폰 조회 실패 (나머지는 정상 표시):', err)
+    return []
+  }
+}
+
 export default async function MyPage() {
   const session = await getServerSession(authOptions)
   if (!session) redirect('/auth')
@@ -41,7 +55,7 @@ export default async function MyPage() {
     companyName?: string
   }
 
-  const [{ data: quotes }, returns] = await Promise.all([
+  const [{ data: quotes }, returns, coupons] = await Promise.all([
     supabase
       .from('quotes')
       .select('id, order_number, company_name, cart, final_total, discount_rate, created_at')
@@ -49,6 +63,7 @@ export default async function MyPage() {
       .order('created_at', { ascending: false })
       .limit(20),
     user.id ? loadReturnsSafely(user.id) : Promise.resolve<ReturnSummary[]>([]),
+    user.id ? loadCouponsSafely(user.id) : Promise.resolve<AvailableCoupon[]>([]),
   ])
 
   const orders = (quotes ?? []) as OrderSummary[]
@@ -108,6 +123,10 @@ export default async function MyPage() {
                 새 발주서 작성
               </Link>
             </div>
+          </div>
+
+          <div id="coupons" className="scroll-mt-24">
+            <MyCoupons coupons={coupons} />
           </div>
 
           <div id="returns" className="scroll-mt-24">

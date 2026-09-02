@@ -3,8 +3,10 @@
 import { useState, useEffect, useRef } from 'react'
 import { useSession } from 'next-auth/react'
 import { CartItem } from '@/lib/types'
-import { Trash2, Plus, Minus, FileText, CheckCircle, Upload, X, Search, AlertCircle, Mail } from 'lucide-react'
+import { Trash2, Plus, Minus, FileText, CheckCircle, Upload, X, Search, AlertCircle, Mail, Ticket } from 'lucide-react'
 import Link from 'next/link'
+import CouponSelector, { type AppliedCoupon } from '@/components/CouponSelector'
+import { calculateOrderTotals } from '@/lib/pricing'
 
 declare global {
   interface Window {
@@ -36,6 +38,8 @@ export default function QuotePage() {
   const [bizFile, setBizFile] = useState<File | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const addressDetailRef = useRef<HTMLInputElement>(null)
+
+  const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(null)
 
   const [showConfirmModal, setShowConfirmModal] = useState(false)
   const [showSuccessModal, setShowSuccessModal] = useState(false)
@@ -135,12 +139,18 @@ export default function QuotePage() {
     formData.append('businessNumber', form.businessNumber)
     formData.append('notes', form.notes)
     formData.append('cart', JSON.stringify(cart))
+    // 서버는 코드/아이디만 받아 할인을 다시 계산한다 (금액은 보내지 않는다)
+    if (appliedCoupon) {
+      if (appliedCoupon.code) formData.append('couponCode', appliedCoupon.code)
+      else formData.append('couponId', appliedCoupon.id)
+    }
     if (bizFile) formData.append('bizFile', bizFile)
 
     try {
       const res = await fetch('/api/send-quote', { method: 'POST', body: formData })
       if (!res.ok) throw new Error('전송 실패')
       updateCart([])
+      setAppliedCoupon(null)
       setShowSuccessModal(true)
     } catch {
       setSubmitError(true)
@@ -149,18 +159,15 @@ export default function QuotePage() {
     }
   }
 
-  const totalQty = cart.reduce((sum, item) => sum + item.quantity, 0)
-  const discountRate = totalQty >= 100 ? 0.15 : totalQty >= 50 ? 0.12 : totalQty >= 10 ? 0.10 : 0
-  const totalAmount = cart.reduce(
-    (sum, item) => sum + item.product.priceVatIncluded * item.quantity,
-    0
-  )
-  const discountAmount = Math.round(totalAmount * discountRate)
-  const finalTotal = discountAmount > 0
-    ? (totalAmount - discountAmount >= 100000
-      ? Math.floor((totalAmount - discountAmount) / 1000) * 1000
-      : totalAmount - discountAmount)
-    : totalAmount
+  // 금액 계산은 lib/pricing.ts 한 곳에서만 한다 — 서버도 같은 함수를 쓴다.
+  // 쿠폰 할인액은 서버가 검증하며 계산한 값(appliedCoupon)을 그대로 신뢰한다.
+  const totals = calculateOrderTotals(cart, null)
+  const totalQty = totals.totalQuantity
+  const discountRate = totals.quantityDiscountRate
+  const totalAmount = totals.subtotal
+  const discountAmount = totals.quantityDiscountAmount
+  const couponDiscount = appliedCoupon?.discountAmount ?? 0
+  const finalTotal = appliedCoupon ? appliedCoupon.finalTotal : totals.finalTotal
 
   return (
     <>
@@ -255,6 +262,26 @@ export default function QuotePage() {
                         </div>
                       </>
                     )}
+                    {couponDiscount > 0 && (
+                      <div className="flex justify-between items-center text-sm text-[#A08860] font-semibold">
+                        <span className="flex items-center gap-1.5 min-w-0">
+                          <Ticket size={13} className="flex-shrink-0" />
+                          <span className="truncate">쿠폰 · {appliedCoupon?.name}</span>
+                        </span>
+                        <span className="flex-shrink-0">- {couponDiscount.toLocaleString()}원</span>
+                      </div>
+                    )}
+
+                    {/* 쿠폰 적용 영역 */}
+                    <div className="pt-2">
+                      <CouponSelector
+                        cart={cart}
+                        isLoggedIn={status === 'authenticated'}
+                        applied={appliedCoupon}
+                        onApply={setAppliedCoupon}
+                      />
+                    </div>
+
                     <div className="flex justify-between items-center pt-1 border-t border-gray-200">
                       <span className="font-semibold text-gray-700">최종 합계 (VAT 포함)</span>
                       <span className="text-xl font-black text-[#333333]">
@@ -445,8 +472,16 @@ export default function QuotePage() {
                 </div>
                 {discountRate > 0 && (
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-500">할인 ({discountRate * 100}%)</span>
+                    <span className="text-gray-500">수량 할인 ({discountRate * 100}%)</span>
                     <span className="text-red-500 font-semibold">- {discountAmount.toLocaleString()}원</span>
+                  </div>
+                )}
+                {couponDiscount > 0 && (
+                  <div className="flex justify-between text-sm gap-3">
+                    <span className="text-gray-500 truncate">쿠폰 · {appliedCoupon?.name}</span>
+                    <span className="text-[#A08860] font-semibold flex-shrink-0">
+                      - {couponDiscount.toLocaleString()}원
+                    </span>
                   </div>
                 )}
                 <div className="border-t border-[#E8DDD0] pt-2 flex justify-between text-sm">

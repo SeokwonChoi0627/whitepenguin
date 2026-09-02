@@ -5,6 +5,10 @@ import fs from 'fs'
 import path from 'path'
 import { getToken } from 'next-auth/jwt'
 import { supabase } from '@/lib/supabase'
+import { calculateOrderTotals } from '@/lib/pricing'
+import { describeDiscount } from '@/lib/coupons'
+import { resolveCouponForCart, resolveCouponRecordById } from '@/lib/coupon-resolver'
+import { getCouponById, recordRedemption } from '@/lib/coupon-store'
 
 // ─── 카테고리 한국어 라벨 ────────────────────────────────────
 const CATEGORY_LABELS: Record<string, string> = {
@@ -60,9 +64,9 @@ function buildExcel(
   phone: string,
   address: string,
   notes: string,
-  cart: { product: { name: string; size?: string }; quantity: number }[]
+  cart: { product: { name: string; size?: string }; quantity: number }[],
+  orderNumber: string
 ): Buffer {
-  const orderNumber = generateOrderNumber()
   const formattedPhone = formatPhone(phone)
   const rows = cart.map((item) => ({
     성함: representative,
@@ -94,6 +98,12 @@ function buildExcel(
 }
 
 // ─── 견적서 HTML 이메일 생성 ──────────────────────────────────
+interface QuoteCouponLine {
+  name: string
+  summary: string
+  amount: number
+}
+
 function buildQuoteEmail(
   companyName: string,
   cart: { product: { name: string; size?: string; category?: string; priceVatIncluded: number }; quantity: number }[],
@@ -102,7 +112,8 @@ function buildQuoteEmail(
   discountAmount: number,
   finalTotal: number,
   logoBase64: string,
-  showRounding: boolean
+  showRounding: boolean,
+  couponLine: QuoteCouponLine | null
 ): string {
   const today = new Date()
   const dateStr = `${today.getFullYear()}.${String(today.getMonth() + 1).padStart(2, '0')}.${String(today.getDate()).padStart(2, '0')} (${['일','월','화','수','목','금','토'][today.getDay()]})`
@@ -138,6 +149,15 @@ function buildQuoteEmail(
       <td style="border:1px solid #ccc;padding:7px 10px;"></td>
       <td style="border:1px solid #ccc;padding:7px 10px;"></td>
     </tr>`).join('')
+
+  const couponRow = couponLine ? `
+    <tr>
+      <td colspan="5" style="border:1px solid #ccc;padding:7px 10px;text-align:center;background:#f5f5f5;">
+        쿠폰 할인<br /><span style="font-size:11px;color:#777;">${couponLine.name} · ${couponLine.summary}</span>
+      </td>
+      <td style="border:1px solid #ccc;padding:7px 10px;text-align:right;color:#c0392b;">(${couponLine.amount.toLocaleString()})</td>
+      <td style="border:1px solid #ccc;padding:7px 10px;"></td>
+    </tr>` : ''
 
   const discountRow = discountRate > 0 ? `
     <tr>
@@ -209,6 +229,7 @@ function buildQuoteEmail(
         <td style="border:1px solid #ccc;padding:7px 10px;"></td>
       </tr>
       ${discountRow}
+      ${couponRow}
       <!-- 최종 소계 -->
       <tr style="background:#f0f0f0;">
         <td colspan="5" style="border:1px solid #ccc;padding:7px 10px;text-align:center;font-weight:bold;">소 계</td>
@@ -261,22 +282,72 @@ export async function POST(req: NextRequest) {
       quantity: number
     }[] = JSON.parse(cartJson)
 
-    // ── 할인 계산 ──────────────────────────────────────────────
-    const totalQty = cart.reduce((sum, item) => sum + item.quantity, 0)
-    const discountRate = totalQty >= 100 ? 0.15 : totalQty >= 50 ? 0.12 : totalQty >= 10 ? 0.10 : 0
+    // ── 주문번호는 한 번만 만들어 엑셀·DB·쿠폰 사용기록이 같은 값을 쓰게 한다 ──
+    const orderNumber = generateOrderNumber()
 
-    const totalBeforeDiscount = cart.reduce(
-      (sum, item) => sum + item.product.priceVatIncluded * item.quantity, 0
-    )
-    const discountAmount = Math.round(totalBeforeDiscount * discountRate)
-    const afterDiscount = totalBeforeDiscount - discountAmount
-    // 10만원 이상일 때만 천원 미만 절사
-    const finalTotal = afterDiscount >= 100000
-      ? Math.floor(afterDiscount / 1000) * 1000
-      : afterDiscount
+    // ── 쿠폰 확인 + 금액 계산 ──────────────────────────────────
+    // 클라이언트가 보낸 할인 금액은 쓰지 않는다. 쿠폰 코드/아이디만 받아
+    // 서버에서 유효성을 다시 검사하고 금액을 새로 계산한다.
+    const userId = (token?.id as string | undefined) ?? null
+    const couponCode = (formData.get('couponCode') as string | null)?.trim() || null
+    const couponId = (formData.get('couponId') as string | null)?.trim() || null
+
+    let appliedCoupon: { id: string; name: string; code: string | null; summary: string } | null = null
+    let totals = calculateOrderTotals(cart, null)
+
+    if ((couponCode || couponId) && userId) {
+      try {
+        const resolved = couponId
+          ? await (async () => {
+              const c = await getCouponById(couponId)
+              return c && c.auto_apply_to_members
+                ? await resolveCouponRecordById(cart, c, userId)
+                : null
+            })()
+          : await resolveCouponForCart(cart, couponCode, userId)
+
+        if (resolved?.ok && resolved.coupon) {
+          totals = resolved.totals
+          appliedCoupon = {
+            id: resolved.coupon.id,
+            name: resolved.coupon.name,
+            code: resolved.coupon.code,
+            summary: describeDiscount(resolved.coupon),
+          }
+        } else if (resolved?.error) {
+          // 쿠폰이 무효해도 발주 자체는 막지 않는다 — 할인 없이 진행하고 로그만 남긴다
+          console.warn(`쿠폰 적용 불가 (${couponCode ?? couponId}): ${resolved.error}`)
+        }
+      } catch (err) {
+        console.error('쿠폰 처리 오류 (할인 없이 진행):', err)
+      }
+    }
+
+    // 쿠폰 사용을 기록한다. 유니크 제약에 걸리면(동시 제출) 할인을 되돌린다.
+    if (appliedCoupon && userId) {
+      const recorded = await recordRedemption({
+        couponId: appliedCoupon.id,
+        userId,
+        orderNumber,
+        discountAmount: totals.couponDiscountAmount,
+      }).catch((err) => {
+        console.error('쿠폰 사용기록 저장 오류:', err)
+        return false
+      })
+      if (!recorded) {
+        console.warn(`쿠폰 중복 사용 감지 — 할인 취소 (${appliedCoupon.id}/${userId})`)
+        appliedCoupon = null
+        totals = calculateOrderTotals(cart, null)
+      }
+    }
+
+    const discountRate = totals.quantityDiscountRate
+    const totalBeforeDiscount = totals.subtotal
+    const discountAmount = totals.quantityDiscountAmount
+    const finalTotal = totals.finalTotal
 
     // ── 엑셀 생성 ──────────────────────────────────────────────
-    const excelBuffer = buildExcel(representative, phone, address, notes, cart)
+    const excelBuffer = buildExcel(representative, phone, address, notes, cart, orderNumber)
     const today = new Date()
     const dateStr = `${today.getFullYear()}${String(today.getMonth() + 1).padStart(2, '0')}${String(today.getDate()).padStart(2, '0')}`
     const excelFilename = `발주서_${companyName}_${dateStr}.xlsx`
@@ -323,6 +394,15 @@ export async function POST(req: NextRequest) {
       </thead>
       <tbody>${productRows}</tbody>
       <tfoot>
+        ${appliedCoupon ? `
+        <tr style="background:#fff8e7;">
+          <td colspan="2" style="padding:10px 14px;font-size:14px;color:#8A6A3B;">
+            🎟️ 쿠폰 할인 — ${appliedCoupon.name}${appliedCoupon.code ? ` (${appliedCoupon.code})` : ''}
+          </td>
+          <td style="padding:10px 14px;text-align:right;font-weight:700;font-size:14px;color:#c0392b;">
+            -${totals.couponDiscountAmount.toLocaleString()}원
+          </td>
+        </tr>` : ''}
         <tr style="background:#f9f4ee;">
           <td colspan="2" style="padding:12px 14px;font-weight:700;font-size:15px;">
             합계 (VAT 포함)${discountRate > 0 ? ` · ${discountRate * 100}% 할인 적용` : ''}
@@ -344,7 +424,10 @@ export async function POST(req: NextRequest) {
     const logoBase64 = `data:image/png;base64,${fs.readFileSync(logoPath).toString('base64')}`
     const customerHtmlBody = buildQuoteEmail(
       companyName, cart, discountRate, totalBeforeDiscount, discountAmount, finalTotal, logoBase64,
-      afterDiscount >= 100000
+      totals.roundingAmount > 0,
+      appliedCoupon
+        ? { name: appliedCoupon.name, summary: appliedCoupon.summary, amount: totals.couponDiscountAmount }
+        : null
     )
 
     // ── 메일 발송 ──────────────────────────────────────────────
@@ -387,7 +470,7 @@ export async function POST(req: NextRequest) {
 
     // ── Supabase DB 저장 ───────────────────────────────────────
     await supabase.from('quotes').insert({
-      order_number: generateOrderNumber(),
+      order_number: orderNumber,
       user_id: token?.id as string | null ?? null,
       company_name: companyName,
       representative,
@@ -400,6 +483,9 @@ export async function POST(req: NextRequest) {
       total_amount: totalBeforeDiscount,
       discount_rate: discountRate,
       final_total: finalTotal,
+      coupon_id: appliedCoupon?.id ?? null,
+      coupon_name: appliedCoupon?.name ?? null,
+      coupon_discount: totals.couponDiscountAmount || null,
     })
 
     // ── 로그인 사용자: 프로필에 발주서 정보 자동 저장 ─────────────
