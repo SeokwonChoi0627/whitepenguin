@@ -7,6 +7,7 @@ import { ChevronLeft, ShoppingCart, Package, Ruler, Hash, Tag, Minus, Plus } fro
 import { Product, Category } from '@/lib/types'
 import ImageCarousel from './ImageCarousel'
 import ProductDescription from './ProductDescription'
+import { MAX_QTY, addToCart, clampQty, parseQtyInput } from '@/lib/cart'
 
 interface Props {
   product: Product
@@ -16,38 +17,18 @@ interface Props {
   soldOut?: boolean
 }
 
-const MAX_QTY = 999
-
 export default function ProductDetailClient({ product, category, images, descriptionHtml, soldOut }: Props) {
   const router = useRouter()
   const [added, setAdded] = useState(false)
   const [quantity, setQuantity] = useState(1)
 
-  const clampQty = (n: number) => Math.max(1, Math.min(MAX_QTY, Math.floor(n) || 1))
-
   const handleQtyChange = (next: number) => setQuantity(clampQty(next))
 
-  const handleQtyInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const raw = e.target.value.replace(/[^0-9]/g, '')
-    if (raw === '') {
-      setQuantity(1)
-      return
-    }
-    setQuantity(clampQty(parseInt(raw, 10)))
-  }
+  const handleQtyInput = (e: React.ChangeEvent<HTMLInputElement>) =>
+    setQuantity(parseQtyInput(e.target.value))
 
   const handleAddToQuote = () => {
-    const stored = localStorage.getItem('quoteCart')
-    const cart = stored ? JSON.parse(stored) : []
-    const existing = cart.find(
-      (item: { product: { id: string }; quantity: number }) => item.product.id === product.id
-    )
-    if (existing) {
-      existing.quantity = clampQty(existing.quantity + quantity)
-    } else {
-      cart.push({ product, quantity })
-    }
-    localStorage.setItem('quoteCart', JSON.stringify(cart))
+    addToCart(product, quantity)
     setAdded(true)
     setTimeout(() => setAdded(false), 2000)
   }
