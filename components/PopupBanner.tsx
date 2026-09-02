@@ -3,29 +3,44 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { X } from 'lucide-react'
+import { todayString, type PublicPopup } from '@/lib/popup'
 
-// 배너 이미지 & 링크 설정
-const BANNER_SRC = '/popup-banner.jpg'
-const CTA_HREF = '/products' // '자세히 보기' → 전체 상품 목록
 const DISMISS_KEY = 'wp_popup_dismissed_date' // '오늘 하루 보지 않기' 저장 키
 
-/** 로컬 기준 오늘 날짜 (YYYY-MM-DD) */
-function today(): string {
-  const d = new Date()
-  const mm = String(d.getMonth() + 1).padStart(2, '0')
-  const dd = String(d.getDate()).padStart(2, '0')
-  return `${d.getFullYear()}-${mm}-${dd}`
-}
-
+/**
+ * 메인 팝업 배너.
+ *
+ * 설정을 서버 컴포넌트에서 읽지 않고 여기서 가져온다. 메인 페이지는 정적 생성이라
+ * 서버에서 읽으면 재배포 전까지 바뀐 설정이 반영되지 않는다.
+ * (/api/popup 은 force-dynamic 이라 항상 최신 값을 준다)
+ */
 export default function PopupBanner() {
+  const [popup, setPopup] = useState<PublicPopup | null>(null)
   const [open, setOpen] = useState(false)
 
   useEffect(() => {
-    // '오늘 하루 보지 않기'로 오늘 날짜가 저장돼 있으면 표시하지 않음
+    // '오늘 하루 보지 않기'가 오늘 날짜로 저장돼 있으면 요청조차 하지 않는다
     try {
-      if (localStorage.getItem(DISMISS_KEY) !== today()) setOpen(true)
+      if (localStorage.getItem(DISMISS_KEY) === todayString()) return
     } catch {
-      setOpen(true)
+      /* localStorage 사용 불가 시 그대로 진행 */
+    }
+
+    let cancelled = false
+    ;(async () => {
+      try {
+        const res = await fetch('/api/popup', { cache: 'no-store' })
+        if (!res.ok) return
+        const data = await res.json()
+        if (cancelled || !data.popup) return
+        setPopup(data.popup as PublicPopup)
+        setOpen(true)
+      } catch {
+        // 팝업은 부가 요소다 — 실패하면 조용히 표시하지 않는다
+      }
+    })()
+    return () => {
+      cancelled = true
     }
   }, [])
 
@@ -39,13 +54,13 @@ export default function PopupBanner() {
     }
   }, [open])
 
-  if (!open) return null
+  if (!open || !popup) return null
 
   const close = () => setOpen(false)
 
   const dismissForToday = () => {
     try {
-      localStorage.setItem(DISMISS_KEY, today())
+      localStorage.setItem(DISMISS_KEY, todayString())
     } catch {
       /* localStorage 사용 불가 시 무시 */
     }
@@ -74,12 +89,12 @@ export default function PopupBanner() {
           <X size={18} />
         </button>
 
-        {/* 배너 이미지 전체가 '자세히 보기' 링크 */}
-        <Link href={CTA_HREF} onClick={close} className="block">
+        {/* 배너 이미지 전체가 링크 */}
+        <Link href={popup.linkHref} onClick={close} className="block">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={BANNER_SRC}
-            alt="오픈기념 무료배송 이벤트 - 자세히 보기"
+            src={popup.imageUrl}
+            alt={popup.altText}
             className="block w-full cursor-pointer"
           />
         </Link>
@@ -94,7 +109,7 @@ export default function PopupBanner() {
             오늘 하루 보지 않기
           </button>
           <Link
-            href={CTA_HREF}
+            href={popup.linkHref}
             onClick={close}
             className="rounded-lg bg-[#333333] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#1a1a1a]"
           >
