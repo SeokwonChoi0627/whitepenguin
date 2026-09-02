@@ -1,6 +1,8 @@
 // 쿠폰 도메인 — 클라이언트/서버가 공유하는 타입과 검증 규칙.
 // 서버는 이 검증을 반드시 다시 실행한다 (클라이언트 값은 신뢰하지 않는다).
 
+import { formatDateDots } from '@/lib/kst'
+
 export type DiscountType = 'fixed' | 'percent'
 
 export interface Coupon {
@@ -66,9 +68,8 @@ export function describeDiscount(coupon: Pick<Coupon, 'discount_type' | 'discoun
 
 export function formatCouponPeriod(coupon: Pick<Coupon, 'expires_at'>): string {
   if (!coupon.expires_at) return '기간 제한 없음'
-  const d = new Date(coupon.expires_at)
-  const pad = (n: number) => String(n).padStart(2, '0')
-  return `${d.getFullYear()}.${pad(d.getMonth() + 1)}.${pad(d.getDate())}까지`
+  // 한국 기준으로 표시한다. 서버 로컬(UTC) 기준이면 날짜가 하루 밀려 보인다.
+  return `${formatDateDots(coupon.expires_at)}까지`
 }
 
 /**

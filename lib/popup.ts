@@ -1,5 +1,9 @@
 // 메인 팝업 배너 — 클라이언트/서버 공용 타입과 노출 판정.
 
+import { isDateString, todayString } from '@/lib/kst'
+
+export { todayString }
+
 export interface PopupSettings {
   id: number
   is_enabled: boolean
@@ -21,12 +25,6 @@ export interface PublicPopup {
 }
 
 export const DEFAULT_POPUP_LINK = '/products'
-
-/** 로컬 기준 오늘 (YYYY-MM-DD) */
-export function todayString(now: Date = new Date()): string {
-  const pad = (n: number) => String(n).padStart(2, '0')
-  return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`
-}
 
 /**
  * 지금 팝업을 띄워야 하는지 판정한다.
@@ -69,7 +67,7 @@ export function validatePopupSettings(
     return { ok: false, error: '대체 텍스트는 100자 이내로 입력해 주세요.' }
   }
   for (const [label, value] of [['시작일', input.starts_on], ['종료일', input.ends_on]] as const) {
-    if (value && !/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    if (value && !isDateString(value)) {
       return { ok: false, error: `${label} 형식이 올바르지 않습니다.` }
     }
   }
