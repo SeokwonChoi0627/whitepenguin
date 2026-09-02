@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { ChevronRight, ImageIcon, LayoutGrid, MessageSquare, Users } from 'lucide-react'
+import { ChevronRight, ImageIcon, LayoutGrid, MessageSquare, RotateCcw, Users } from 'lucide-react'
 import { PRODUCTS } from '@/lib/products'
 import { CATEGORIES, CATEGORY_MAP } from '@/lib/categories'
 import { getAllProductImages } from '@/app/actions/images'
@@ -48,6 +48,25 @@ export default async function AdminPage() {
                 <span className="text-sm font-medium text-gray-400 ml-1">명</span>
               </p>
             </div>
+          </div>
+        </div>
+
+        {/* ── 주문 관리 ── */}
+        <div>
+          <div className="flex items-center gap-2 mb-3">
+            <RotateCcw size={16} className="text-[#C4A882]" />
+            <h2 className="font-semibold text-[#333333]">주문 관리</h2>
+          </div>
+          <div className="bg-white rounded-2xl shadow-sm overflow-hidden divide-y divide-gray-100">
+            <Link href="/admin/returns"
+              className="flex items-center gap-4 px-5 py-3.5 hover:bg-[#F7F3EE] transition-colors">
+              <span className="text-xl w-7 text-center flex-shrink-0">↩️</span>
+              <div className="flex-1 min-w-0">
+                <p className="font-medium text-[#333333] text-sm">반품요청</p>
+                <p className="text-xs text-gray-400 mt-0.5">환급계좌 확인 및 처리 상태 변경</p>
+              </div>
+              <ChevronRight size={15} className="text-gray-300 flex-shrink-0" />
+            </Link>
           </div>
         </div>
 

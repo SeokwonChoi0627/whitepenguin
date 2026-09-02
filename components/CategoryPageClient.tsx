@@ -5,6 +5,7 @@ import { Category, Product } from '@/lib/types'
 import ProductCard from '@/components/ProductCard'
 import { useState } from 'react'
 import { ArrowRight } from 'lucide-react'
+import { addToCart } from '@/lib/cart'
 
 interface Props {
   category: Category
@@ -15,14 +16,12 @@ interface Props {
 
 export default function CategoryPageClient({ category, products, descriptionHtml, soldOutMap }: Props) {
   const [addedProduct, setAddedProduct] = useState<string | null>(null)
+  const [addedQty, setAddedQty] = useState(1)
 
-  const handleAddToQuote = (product: Product) => {
-    const existing = JSON.parse(localStorage.getItem('quoteCart') || '[]')
-    const idx = existing.findIndex((i: { product: Product }) => i.product.id === product.id)
-    if (idx >= 0) existing[idx].quantity += 1
-    else existing.push({ product, quantity: 1 })
-    localStorage.setItem('quoteCart', JSON.stringify(existing))
+  const handleAddToQuote = (product: Product, quantity: number) => {
+    addToCart(product, quantity)
     setAddedProduct(product.id)
+    setAddedQty(quantity)
     setTimeout(() => setAddedProduct(null), 1500)
   }
 
@@ -80,7 +79,7 @@ export default function CategoryPageClient({ category, products, descriptionHtml
 
           {addedProduct && (
             <div className="mb-4 bg-green-50 border border-green-200 text-green-700 text-sm px-4 py-2 rounded-lg">
-              발주서에 추가되었습니다. <a href="/quote" className="underline font-medium">발주서 보기</a>
+              발주서에 {addedQty}개 추가되었습니다. <a href="/quote" className="underline font-medium">발주서 보기</a>
             </div>
           )}
 

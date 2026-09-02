@@ -8,6 +8,7 @@ import { Product } from '@/lib/types'
 import ProductCard from '@/components/ProductCard'
 import { Search, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
+import { addToCart } from '@/lib/cart'
 
 interface Props {
   thumbnailOverrides: Record<string, string>
@@ -21,6 +22,7 @@ function ProductsInner({ thumbnailOverrides, soldOutMap }: Props) {
   const [selectedCategory, setSelectedCategory] = useState(initialCategory)
   const [searchQuery, setSearchQuery] = useState('')
   const [addedProduct, setAddedProduct] = useState<string | null>(null)
+  const [addedQty, setAddedQty] = useState(1)
 
   // 썸네일 오버라이드 병합
   const products = useMemo(
@@ -43,13 +45,10 @@ function ProductsInner({ thumbnailOverrides, soldOutMap }: Props) {
       .sort((a, b) => (categoryOrder[a.category] ?? 99) - (categoryOrder[b.category] ?? 99))
   }, [products, selectedCategory, searchQuery, categoryOrder])
 
-  const handleAddToQuote = (product: Product) => {
-    const existing = JSON.parse(localStorage.getItem('quoteCart') || '[]')
-    const idx = existing.findIndex((i: { product: Product }) => i.product.id === product.id)
-    if (idx >= 0) existing[idx].quantity += 1
-    else existing.push({ product, quantity: 1 })
-    localStorage.setItem('quoteCart', JSON.stringify(existing))
+  const handleAddToQuote = (product: Product, quantity: number) => {
+    addToCart(product, quantity)
     setAddedProduct(product.id)
+    setAddedQty(quantity)
     setTimeout(() => setAddedProduct(null), 1500)
   }
 
@@ -128,7 +127,7 @@ function ProductsInner({ thumbnailOverrides, soldOutMap }: Props) {
 
           {addedProduct && (
             <div className="mb-4 bg-green-50 border border-green-200 text-green-700 text-sm px-4 py-2 rounded-lg">
-              발주서에 추가되었습니다. <a href="/quote" className="underline font-medium">발주서 보기</a>
+              발주서에 {addedQty}개 추가되었습니다. <a href="/quote" className="underline font-medium">발주서 보기</a>
             </div>
           )}
 
