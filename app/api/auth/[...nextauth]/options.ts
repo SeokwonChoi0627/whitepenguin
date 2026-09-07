@@ -4,6 +4,14 @@ import NaverProvider from 'next-auth/providers/naver'
 import KakaoProvider from 'next-auth/providers/kakao'
 import bcrypt from 'bcryptjs'
 import { supabase } from '@/lib/supabase'
+import { linkSocialAccount } from '@/lib/social-account'
+
+/** 소셜 로그인 provider 목록 — 판별을 한 곳에서만 한다 */
+const SOCIAL_PROVIDERS = ['naver', 'kakao']
+
+function isSocialProvider(provider?: string): boolean {
+  return !!provider && SOCIAL_PROVIDERS.includes(provider)
+}
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -32,6 +40,10 @@ export const authOptions: NextAuthOptions = {
 
         if (!user) return null
 
+        // 소셜로만 가입한 계정은 비밀번호가 없다.
+        // 이 검사가 없으면 bcrypt.compare 가 null 을 받아 예외를 던진다.
+        if (!user.password_hash) return null
+
         const passwordMatch = await bcrypt.compare(credentials.password, user.password_hash)
         if (!passwordMatch) return null
 
@@ -47,28 +59,15 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async signIn({ user, account }) {
-      // 소셜 로그인 시 Supabase users 테이블에 자동 upsert
-      if (account?.provider === 'naver' || account?.provider === 'kakao') {
-        const email = user.email
-        if (!email) return false
+      if (!isSocialProvider(account?.provider)) return true
 
-        const { data: existing } = await supabase
-          .from('users')
-          .select('id')
-          .eq('email', email)
-          .single()
+      // 소셜 로그인은 인증만 해준다. 이 사이트의 회원 행이 없으면
+      // 발주·쿠폰·반품이 전부 동작하지 않으므로, 연결에 실패하면 로그인을 막고
+      // 왜 막혔는지 로그인 화면에서 알 수 있게 한다.
+      const result = await linkSocialAccount({ email: user.email, name: user.name })
+      if (result.ok) return true
 
-        if (!existing) {
-          await supabase.from('users').insert({
-            email,
-            name: user.name ?? '',
-            company_name: null,
-            phone: null,
-            password_hash: null,
-          })
-        }
-      }
-      return true
+      return `/auth?error=${result.reason}`
     },
     async jwt({ token, user, account }) {
       if (user) {
@@ -76,13 +75,13 @@ export const authOptions: NextAuthOptions = {
         token.companyName = (user as any).companyName
         token.phone = (user as any).phone
       }
-      // 소셜 로그인 후 DB에서 추가 정보 불러오기
-      if ((account?.provider === 'naver' || account?.provider === 'kakao') && token.email) {
+      // 소셜 로그인 후 DB에서 회원 정보 불러오기 (token.id 가 있어야 발주·쿠폰이 동작한다)
+      if (isSocialProvider(account?.provider) && token.email) {
         const { data: dbUser } = await supabase
           .from('users')
           .select('id, company_name, phone')
           .eq('email', token.email)
-          .single()
+          .maybeSingle()
         if (dbUser) {
           token.id = dbUser.id
           token.companyName = dbUser.company_name
