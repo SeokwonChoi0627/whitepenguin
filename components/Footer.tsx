@@ -59,8 +59,8 @@ export default function Footer() {
         <div className="mt-8 pt-8 border-t border-gray-700 text-xs text-gray-300 flex flex-col sm:flex-row justify-between gap-2">
           <p>© 2026 화이트펭귄. All rights reserved.</p>
           <div className="flex gap-4">
-            <Link href="#" className="hover:text-white transition-colors">이용약관</Link>
-            <Link href="#" className="hover:text-white transition-colors">개인정보처리방침</Link>
+            <Link href="/terms" className="hover:text-white transition-colors">이용약관</Link>
+            <Link href="/privacy" className="hover:text-white transition-colors">개인정보처리방침</Link>
           </div>
         </div>
       </div>

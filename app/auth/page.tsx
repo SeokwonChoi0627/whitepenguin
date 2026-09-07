@@ -1,17 +1,42 @@
 'use client'
 
-import { useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { signIn } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 
-export default function AuthPage() {
+/**
+ * 소셜 로그인이 막혔을 때 로그인 화면에 보여줄 안내.
+ * NextAuth signIn 콜백이 /auth?error=... 로 돌려보낸다.
+ */
+const SOCIAL_ERROR_MESSAGES: Record<string, string> = {
+  no_email:
+    '이메일 제공에 동의해야 가입할 수 있습니다. 네이버·카카오 로그인 화면에서 이메일 항목에 동의한 뒤 다시 시도해 주세요.',
+  create_failed:
+    '계정을 만드는 중 문제가 발생했습니다. 잠시 후 다시 시도하시거나 050-6814-0627 로 연락해 주세요.',
+  AccessDenied: '로그인이 거부되었습니다. 다시 시도해 주세요.',
+  OAuthAccountNotLinked:
+    '이미 다른 방법으로 가입된 이메일입니다. 기존 방식으로 로그인해 주세요.',
+}
+
+function AuthPageInner() {
   const router = useRouter()
   const [mode, setMode] = useState<'login' | 'register' | 'forgot'>('login')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [forgotEmail, setForgotEmail] = useState('')
   const [forgotSent, setForgotSent] = useState(false)
+
+  const searchParams = useSearchParams()
+
+  // 소셜 로그인 실패로 되돌아온 경우 이유를 보여준다.
+  // 이전에는 조용히 로그인 화면으로 돌아와 원인을 알 수 없었다.
+  useEffect(() => {
+    const code = searchParams.get('error')
+    if (code) {
+      setError(SOCIAL_ERROR_MESSAGES[code] ?? '로그인에 실패했습니다. 다시 시도해 주세요.')
+    }
+  }, [searchParams])
 
   const [loginForm, setLoginForm] = useState({ email: '', password: '' })
   const [registerForm, setRegisterForm] = useState({
@@ -333,12 +358,27 @@ export default function AuthPage() {
 
         <p className="text-center text-xs text-gray-400 mt-6">
           로그인 시{' '}
-          <Link href="#" className="underline">이용약관</Link>
+          <Link href="/terms" className="underline">이용약관</Link>
           {' '}및{' '}
-          <Link href="#" className="underline">개인정보처리방침</Link>
+          <Link href="/privacy" className="underline">개인정보처리방침</Link>
           에 동의하게 됩니다.
         </p>
       </div>
     </div>
+  )
+}
+
+// useSearchParams 를 쓰는 컴포넌트는 Suspense 경계가 있어야 빌드된다
+export default function AuthPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-[80vh] flex items-center justify-center text-gray-400">
+          불러오는 중...
+        </div>
+      }
+    >
+      <AuthPageInner />
+    </Suspense>
   )
 }
