@@ -32,10 +32,12 @@ function AuthPageInner() {
   // 소셜 로그인 실패로 되돌아온 경우 이유를 보여준다.
   // 이전에는 조용히 로그인 화면으로 돌아와 원인을 알 수 없었다.
   useEffect(() => {
-    const code = searchParams.get('error')
-    if (code) {
-      setError(SOCIAL_ERROR_MESSAGES[code] ?? '로그인에 실패했습니다. 다시 시도해 주세요.')
-    }
+    const reason = searchParams.get('error')
+    if (!reason) return
+    const message = SOCIAL_ERROR_MESSAGES[reason] ?? '로그인에 실패했습니다. 다시 시도해 주세요.'
+    // DB 오류 코드가 함께 왔으면 덧붙인다. 문의받았을 때 원인을 바로 좁힐 수 있다.
+    const dbCode = searchParams.get('code')
+    setError(dbCode ? `${message} (오류 코드 ${dbCode})` : message)
   }, [searchParams])
 
   const [loginForm, setLoginForm] = useState({ email: '', password: '' })

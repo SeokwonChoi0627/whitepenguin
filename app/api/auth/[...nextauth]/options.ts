@@ -67,7 +67,8 @@ export const authOptions: NextAuthOptions = {
       const result = await linkSocialAccount({ email: user.email, name: user.name })
       if (result.ok) return true
 
-      return `/auth?error=${result.reason}`
+      const detail = result.reason === 'create_failed' && result.code ? `&code=${result.code}` : ''
+      return `/auth?error=${result.reason}${detail}`
     },
     async jwt({ token, user, account }) {
       if (user) {
