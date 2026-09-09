@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { COMPANY, COMPANY_DISCLOSURES } from '@/lib/company'
 
 export default function Footer() {
   return (
@@ -15,13 +16,17 @@ export default function Footer() {
               베이킹 전문 도구의 B2B, B2C 파트너.<br />
               카페·베이커리·제과 업체를 위한 전문 도매 공급 플랫폼입니다.
             </p>
-            <div className="mt-4 text-xs text-gray-400 space-y-1">
-              <p>사업자등록번호: 345-22-01035</p>
-              <p>대표자: 최석원</p>
-              <p>연락처: 050-6814-0627</p>
-              <p>이메일: dragon0627@naver.com</p>
-              <p>쇼핑몰: <a href="https://smartstore.naver.com/whitepenguin" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-[#C4A882] transition-colors">smartstore.naver.com/whitepenguin</a></p>
-            </div>
+            <p className="mt-4 text-xs text-gray-400">
+              쇼핑몰{' '}
+              <a
+                href={COMPANY.smartStoreUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-[#C4A882] transition-colors"
+              >
+                smartstore.naver.com/whitepenguin
+              </a>
+            </p>
           </div>
 
           {/* 메뉴 */}
@@ -54,6 +59,23 @@ export default function Footer() {
               ))}
             </ul>
           </div>
+        </div>
+
+        {/*
+          전자상거래법 제10조 법정 표시 사항.
+          상호·대표자·영업소 소재지·연락처·사업자등록번호·통신판매업 신고번호가
+          사이트에서 확인 가능해야 한다. 값은 lib/company.ts 한 곳에서 관리한다.
+        */}
+        <div className="mt-10 pt-8 border-t border-gray-700">
+          <h4 className="text-white font-semibold mb-3 text-sm">사업자 정보</h4>
+          <dl className="flex flex-wrap gap-x-5 gap-y-1.5 text-xs text-gray-400">
+            {COMPANY_DISCLOSURES.map((item) => (
+              <div key={item.label} className="flex gap-1.5">
+                <dt className="text-gray-500">{item.label}</dt>
+                <dd className="text-gray-300">{item.value}</dd>
+              </div>
+            ))}
+          </dl>
         </div>
 
         <div className="mt-8 pt-8 border-t border-gray-700 text-xs text-gray-300 flex flex-col sm:flex-row justify-between gap-2">
