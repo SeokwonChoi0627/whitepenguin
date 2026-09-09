@@ -16,7 +16,9 @@ export interface LinkedAccount {
 
 export type LinkResult =
   | { ok: true; user: LinkedAccount }
-  | { ok: false; reason: 'no_email' | 'create_failed' }
+  | { ok: false; reason: 'no_email' }
+  /** DB 오류 코드를 함께 넘긴다 — 로그를 못 보는 환경에서도 화면만으로 원인을 좁힐 수 있도록 */
+  | { ok: false; reason: 'create_failed'; code?: string }
 
 /** 이메일로 기존 회원을 찾는다 */
 async function findByEmail(email: string): Promise<LinkedAccount | null> {
@@ -80,5 +82,5 @@ export async function linkSocialAccount(params: {
   if (retried) return { ok: true, user: retried }
 
   console.error('소셜 회원 생성 실패:', error)
-  return { ok: false, reason: 'create_failed' }
+  return { ok: false, reason: 'create_failed', code: error?.code }
 }
