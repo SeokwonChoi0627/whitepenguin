@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import LegalPage, { Article, List } from '@/components/LegalPage'
-import { COMPANY } from '@/lib/company'
+import { COMPANY, COMPANY_DISCLOSURES } from '@/lib/company'
 
 export const metadata: Metadata = {
   title: '이용약관 | 화이트펭귄',
@@ -144,21 +144,12 @@ export default function TermsPage() {
 
       <Article title="사업자 정보">
         <div className="bg-[#F7F3EE] rounded-xl px-4 py-3 space-y-1">
-          <p>
-            <span className="text-gray-500">상호</span> <strong>{COMPANY.name}</strong>
-          </p>
-          <p>
-            <span className="text-gray-500">대표자</span> <strong>{COMPANY.representative}</strong>
-          </p>
-          <p>
-            <span className="text-gray-500">주소</span> <strong>{COMPANY.address}</strong>
-          </p>
-          <p>
-            <span className="text-gray-500">연락처</span> <strong>{COMPANY.phone}</strong>
-          </p>
-          <p>
-            <span className="text-gray-500">이메일</span> <strong>{COMPANY.email}</strong>
-          </p>
+          {COMPANY_DISCLOSURES.map((item) => (
+            <p key={item.label}>
+              <span className="text-gray-500">{item.label}</span>{' '}
+              <strong>{item.value}</strong>
+            </p>
+          ))}
         </div>
       </Article>
     </LegalPage>
