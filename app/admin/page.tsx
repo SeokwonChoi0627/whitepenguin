@@ -76,6 +76,15 @@ export default async function AdminPage() {
               </div>
               <ChevronRight size={15} className="text-gray-300 flex-shrink-0" />
             </Link>
+            <Link href="/admin/vip"
+              className="flex items-center gap-4 px-5 py-3.5 hover:bg-[#F7F3EE] transition-colors">
+              <span className="text-xl w-7 text-center flex-shrink-0">⭐</span>
+              <div className="flex-1 min-w-0">
+                <p className="font-medium text-[#333333] text-sm">VIP 시크릿 발주</p>
+                <p className="text-xs text-gray-400 mt-0.5">VIP 전용 가격 링크 발급·관리</p>
+              </div>
+              <ChevronRight size={15} className="text-gray-300 flex-shrink-0" />
+            </Link>
             <Link href="/admin/popup"
               className="flex items-center gap-4 px-5 py-3.5 hover:bg-[#F7F3EE] transition-colors">
               <span className="text-xl w-7 text-center flex-shrink-0">📢</span>

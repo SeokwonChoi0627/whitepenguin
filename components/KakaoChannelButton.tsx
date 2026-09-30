@@ -1,13 +1,18 @@
 'use client'
 
+import { usePathname } from 'next/navigation'
+
 export default function KakaoChannelButton() {
+  // VIP 발주 화면은 모바일 하단에 합계 바가 고정돼 있어 그 위로 올린다
+  const aboveBottomBar = usePathname()?.startsWith('/vip/')
+
   return (
     <a
       href="https://pf.kakao.com/_SxdCuX/chat"
       target="_blank"
       rel="noreferrer noopener"
       style={{ backgroundColor: '#FEE500' }}
-      className="fixed bottom-6 right-6 z-50 w-20 rounded-2xl shadow-lg flex flex-col items-center justify-center gap-1 py-3 px-2 transition-transform hover:scale-110 active:scale-95"
+      className={`fixed ${aboveBottomBar ? 'bottom-24 lg:bottom-6' : 'bottom-6'} right-6 z-50 w-20 rounded-2xl shadow-lg flex flex-col items-center justify-center gap-1 py-3 px-2 transition-transform hover:scale-110 active:scale-95`}
       aria-label="카카오톡 채널 채팅 상담"
     >
       <svg
