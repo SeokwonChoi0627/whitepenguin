@@ -6,7 +6,9 @@ import { CartItem } from '@/lib/types'
 import { Trash2, Plus, Minus, FileText, CheckCircle, Upload, X, Search, AlertCircle, Mail, Ticket } from 'lucide-react'
 import Link from 'next/link'
 import CouponSelector, { type AppliedCoupon } from '@/components/CouponSelector'
+import DepositGuide from '@/components/DepositGuide'
 import { calculateOrderTotals } from '@/lib/pricing'
+import { DEPOSIT_NOTICE_SHORT } from '@/lib/payment'
 
 declare global {
   interface Window {
@@ -43,6 +45,8 @@ export default function QuotePage() {
 
   const [showConfirmModal, setShowConfirmModal] = useState(false)
   const [showSuccessModal, setShowSuccessModal] = useState(false)
+  // 제출 성공 시 장바구니를 비우므로, 입금 안내에 쓸 금액은 비우기 전에 따로 보관한다.
+  const [submittedTotal, setSubmittedTotal] = useState(0)
 
   const openAddressSearch = () => {
     const doOpen = () => {
@@ -149,6 +153,7 @@ export default function QuotePage() {
     try {
       const res = await fetch('/api/send-quote', { method: 'POST', body: formData })
       if (!res.ok) throw new Error('전송 실패')
+      setSubmittedTotal(finalTotal)
       updateCart([])
       setAppliedCoupon(null)
       setShowSuccessModal(true)
@@ -439,9 +444,9 @@ export default function QuotePage() {
 
       {/* ── 확인 팝업 ── */}
       {showConfirmModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
-          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setShowConfirmModal(false)} />
-          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden">
+        <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center px-4 py-6">
+          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setShowConfirmModal(false)} />
+          <div className="relative my-auto bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden">
             {/* 상단 헤더 */}
             <div className="bg-[#333333] px-6 py-5 text-white">
               <div className="flex items-center gap-3">
@@ -489,6 +494,12 @@ export default function QuotePage() {
                   <span className="font-black text-[#333333] text-base">{finalTotal.toLocaleString()}원</span>
                 </div>
               </div>
+              <div className="rounded-xl border border-[#E3D4BE] bg-[#FDF9F3] px-3.5 py-2.5">
+                <p className="text-xs font-bold text-[#8A6A3B]">{DEPOSIT_NOTICE_SHORT}</p>
+                <p className="text-xs text-gray-500 leading-relaxed mt-0.5">
+                  제출하시면 입금 계좌를 안내드립니다. 입금이 확인되면 발주가 확정됩니다.
+                </p>
+              </div>
               <p className="text-xs text-gray-400 text-center">
                 제출 후 기재하신 이메일로 견적서가 발송됩니다.
               </p>
@@ -515,20 +526,22 @@ export default function QuotePage() {
 
       {/* ── 완료 팝업 ── */}
       {showSuccessModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
-          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
-          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden">
+        <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center px-4 py-6">
+          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" />
+          <div className="relative my-auto bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden">
             {/* 상단 장식 */}
             <div className="bg-gradient-to-br from-[#C4A882] to-[#a8896a] px-6 pt-8 pb-6 text-white text-center">
               <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center mx-auto mb-3">
                 <CheckCircle size={32} className="text-white" />
               </div>
-              <h2 className="text-xl font-black tracking-tight">발주 완료!</h2>
-              <p className="text-white/75 text-sm mt-1">발주서가 성공적으로 접수되었습니다</p>
+              <h2 className="text-xl font-black tracking-tight">발주 접수 완료</h2>
+              <p className="text-white/75 text-sm mt-1">입금이 확인되면 발주가 확정됩니다</p>
             </div>
 
             {/* 내용 */}
-            <div className="px-6 py-5">
+            <div className="px-6 py-5 space-y-3">
+              <DepositGuide amount={submittedTotal} />
+
               <div className="flex items-start gap-3 bg-[#F7F3EE] rounded-xl p-4">
                 <Mail size={18} className="text-[#C4A882] mt-0.5 flex-shrink-0" />
                 <div>
@@ -539,7 +552,7 @@ export default function QuotePage() {
                   </p>
                 </div>
               </div>
-              <p className="text-xs text-gray-400 text-center mt-3">
+              <p className="text-xs text-gray-400 text-center">
                 급하신 경우 <span className="font-semibold text-gray-600">050-6814-0627</span>로 연락바랍니다.
               </p>
             </div>

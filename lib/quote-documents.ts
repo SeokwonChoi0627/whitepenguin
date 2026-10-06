@@ -5,6 +5,7 @@ import 'server-only'
 import * as XLSX from 'xlsx'
 import fs from 'fs'
 import path from 'path'
+import { BANK_ACCOUNT_TEXT, DEPOSIT_NOTICE } from './payment'
 
 
 // ─── 카테고리 한국어 라벨 ────────────────────────────────────
@@ -242,7 +243,10 @@ export function buildQuoteEmail(
 
   <!-- 입금 계좌 -->
   <div style="font-size:13px;margin-top:16px;">
-    ※ 입금 계좌 : 국민은행 712401-01-693592 최석원(화이트펭귄)
+    ※ 입금 계좌 : ${BANK_ACCOUNT_TEXT}
+  </div>
+  <div style="font-size:13px;margin-top:6px;color:#8A6A3B;font-weight:bold;">
+    ※ ${DEPOSIT_NOTICE}
   </div>
 
   <!-- 로고 -->
