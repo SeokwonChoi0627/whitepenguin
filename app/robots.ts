@@ -5,7 +5,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: '*',
       allow: '/',
-      disallow: '/admin/',
+      disallow: ['/admin/', '/vip/'],
     },
     sitemap: 'https://whitepenguin.co.kr/sitemap.xml',
   }
