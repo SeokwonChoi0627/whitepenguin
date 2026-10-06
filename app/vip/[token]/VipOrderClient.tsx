@@ -6,6 +6,8 @@ import { CATEGORIES } from '@/lib/categories'
 import type { VipCatalogItem, VipContact } from '@/lib/vip'
 import VipProductRow from './VipProductRow'
 import VipOrderForm, { type VipFormState } from './VipOrderForm'
+import DepositGuide from '@/components/DepositGuide'
+import { DEPOSIT_NOTICE_SHORT } from '@/lib/payment'
 
 interface Props {
   token: string
@@ -71,7 +73,13 @@ export default function VipOrderClient({ token, catalog, contact }: Props) {
 
   const submit = async () => {
     if (summary.itemCount === 0 || submitting) return
-    if (!confirm(`총 ${summary.totalQuantity.toLocaleString()}개, ${summary.total.toLocaleString()}원을 발주할까요?`)) return
+    const confirmed = confirm(
+      `총 ${summary.totalQuantity.toLocaleString()}개, ${summary.total.toLocaleString()}원을 발주할까요?
+
+${DEPOSIT_NOTICE_SHORT}
+발주 후 입금 계좌를 안내드립니다.`
+    )
+    if (!confirmed) return
 
     setSubmitting(true)
     setError('')
@@ -102,10 +110,14 @@ export default function VipOrderClient({ token, catalog, contact }: Props) {
         <div className="bg-white rounded-2xl shadow-sm px-8 py-10 text-center max-w-sm w-full">
           <CheckCircle size={44} className="mx-auto text-[#C4A882]" />
           <h1 className="text-lg font-bold text-[#333333] mt-4">발주가 접수되었습니다</h1>
+          <p className="text-xs text-[#8A6A3B] font-semibold mt-1">{DEPOSIT_NOTICE_SHORT}</p>
           <p className="text-sm text-gray-500 mt-2">
             주문번호 <span className="font-semibold text-[#333333] tabular-nums">{done.orderNumber}</span>
           </p>
           <p className="text-2xl font-bold text-[#333333] tabular-nums mt-3">{done.total.toLocaleString()}원</p>
+          <div className="mt-5 text-left">
+            <DepositGuide amount={done.total} />
+          </div>
           {form.email && (
             <p className="text-xs text-gray-400 mt-3">{form.email} 로 견적서를 보냈습니다.</p>
           )}
